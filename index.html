@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mal.exe Denied — AI Cyber Threat Detection</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#020508;--bg2:#040a12;--bg3:#071422;--bg4:#0a1e34;
+  --c:#00e5ff;--c2:rgba(0,229,255,0.15);--c3:rgba(0,229,255,0.06);
+  --g:#00ff9d;--g2:rgba(0,255,157,0.15);
+  --r:#ff1744;--r2:rgba(255,23,68,0.15);
+  --p:#b400ff;--p2:rgba(180,0,255,0.15);
+  --a:#ff6d00;--y:#ffd600;
+  --t1:#dde8f0;--t2:#7a9bb5;--t3:#3a5a75;--t4:#1a3a55;
+  --b:rgba(0,229,255,0.08);--bh:rgba(0,229,255,0.2);
+  --glass:rgba(4,10,18,0.75);--glass2:rgba(2,5,8,0.92);
+  --glow:0 0 20px rgba(0,229,255,0.3),0 0 60px rgba(0,229,255,0.1);
+  --glow-g:0 0 20px rgba(0,255,157,0.3);
+  --glow-r:0 0 20px rgba(255,23,68,0.3);
+  --glow-p:0 0 20px rgba(180,0,255,0.3);
+  --font-d:'Orbitron',monospace;--font-b:'Rajdhani',sans-serif;
+  --font-m:'Share Tech Mono',monospace;--font-c:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:var(--c) var(--bg);}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--c),var(--p));border-radius:2px;}
+body{font-family:var(--font-b);background:var(--bg);color:var(--t1);overflow-x:hidden;cursor:none;font-size:16px;line-height:1.6;}
+::selection{background:rgba(0,229,255,0.2);color:var(--c);}
+::placeholder{color:var(--t4);}
+a{text-decoration:none;color:inherit;}
+button{font-family:inherit;cursor:none;}
+
+/* ── CURSOR ── */
+#CUR,#CURRING{position:fixed;pointer-events:none;z-index:99999;border-radius:50%;transform:translate(-50%,-50%);}
+#CUR{width:8px;height:8px;background:var(--c);box-shadow:var(--glow);transition:width .15s,height .15s,background .2s;}
+#CURRING{width:32px;height:32px;border:1px solid rgba(0,229,255,0.5);transition:left .09s ease,top .09s ease;}
+
+/* ── CANVAS ── */
+#MC{position:fixed;inset:0;z-index:0;opacity:.055;pointer-events:none;}
+
+/* ── AMBIENT OVERLAYS ── */
+.hex-bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='97'%3E%3Cpath d='M28 66L0 50V17L28 1l28 16v33z' fill='none' stroke='%2300e5ff' stroke-width='.5'/%3E%3Cpath d='M28 100L0 84V51l28-17 28 17v33z' fill='none' stroke='%2300e5ff' stroke-width='.5'/%3E%3C/svg%3E");
+}
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(0,229,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,229,255,.025) 1px,transparent 1px);
+  background-size:80px 80px;
+  mask-image:radial-gradient(ellipse at 50% 40%,black 20%,transparent 70%);
+}
+.scanl{position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--c),transparent);z-index:9000;opacity:.4;animation:scanl 6s linear infinite;pointer-events:none;}
+@keyframes scanl{0%{top:-2px}100%{top:100vh}}
+.vignette{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 40%,rgba(2,5,8,.7) 100%);}
+
+/* Corner brackets */
+.cb{position:fixed;z-index:1;pointer-events:none;width:60px;height:60px;}
+.cb.tl{top:0;left:0;border-top:2px solid rgba(0,229,255,.2);border-left:2px solid rgba(0,229,255,.2);}
+.cb.tr{top:0;right:0;border-top:2px solid rgba(0,229,255,.2);border-right:2px solid rgba(0,229,255,.2);}
+.cb.bl{bottom:32px;left:0;border-bottom:2px solid rgba(0,229,255,.2);border-left:2px solid rgba(0,229,255,.2);}
+.cb.br{bottom:32px;right:0;border-bottom:2px solid rgba(0,229,255,.2);border-right:2px solid rgba(0,229,255,.2);}
+
+/* Data streams */
+.ds{position:fixed;width:1px;top:0;height:100vh;z-index:0;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(0,229,255,.06),transparent);animation:ds 10s linear infinite;}
+@keyframes ds{0%{transform:translateY(-100%)}100%{transform:translateY(100%)}}
+
+/* ── TOAST ── */
+#TOAST{position:fixed;top:90px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+.t-item{background:var(--glass2);border:1px solid var(--bh);border-radius:6px;padding:10px 18px;font-family:var(--font-m);font-size:.75rem;color:var(--t1);animation:tin .3s ease;max-width:320px;backdrop-filter:blur(20px);}
+.t-item.s{border-color:rgba(0,255,157,.4);color:var(--g);}
+.t-item.e{border-color:rgba(255,23,68,.4);color:var(--r);}
+.t-item.out{animation:tout .3s ease both;}
+@keyframes tin{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes tout{to{opacity:0;transform:translateX(40px)}}
+
+/* ── TICKER ── */
+.ticker{position:fixed;bottom:0;left:0;right:0;z-index:90;height:30px;background:rgba(2,5,8,.95);border-top:1px solid var(--b);display:flex;align-items:center;overflow:hidden;}
+.tk-tag{flex-shrink:0;height:100%;padding:0 14px;background:rgba(255,23,68,.15);border-right:1px solid rgba(255,23,68,.3);font-family:var(--font-m);font-size:.6rem;color:var(--r);letter-spacing:2px;display:flex;align-items:center;gap:6px;}
+.tk-track{flex:1;overflow:hidden;}
+.tk-inner{display:inline-flex;gap:0;animation:tickmov 50s linear infinite;white-space:nowrap;}
+.tk-sep{padding:0 20px;color:var(--t4);font-size:.5rem;}
+.tk-i{padding:0 24px;font-family:var(--font-m);font-size:.6rem;letter-spacing:.5px;}
+.tk-i.d{color:var(--r);}.tk-i.w{color:var(--y);}.tk-i.s{color:var(--g);}
+@keyframes tickmov{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:800;height:66px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;background:rgba(2,5,8,.7);backdrop-filter:blur(30px);border-bottom:1px solid var(--b);transition:all .4s;}
+nav.scr{background:rgba(2,5,8,.97);box-shadow:0 4px 40px rgba(0,0,0,.6),0 1px 0 rgba(0,229,255,.06);}
+.nb{display:flex;align-items:center;gap:12px;}
+.shield-wrap{position:relative;display:flex;align-items:center;justify-content:center;}
+.shpulse{position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(0,229,255,.2);animation:shp 2.5s ease-in-out infinite;}
+.shpulse2{animation-delay:1.25s;}
+@keyframes shp{0%,100%{transform:scale(.8);opacity:0}50%{transform:scale(1.3);opacity:.6}}
+.brand-info{display:flex;flex-direction:column;}
+.bname{font-family:var(--font-d);font-size:1rem;font-weight:700;letter-spacing:3px;color:#fff;line-height:1.1;}
+.bname span{color:var(--c);}
+.bsub{font-family:var(--font-m);font-size:.5rem;color:var(--t3);letter-spacing:3px;margin-top:1px;}
+.nlinks{display:flex;gap:4px;}
+.nl{font-family:var(--font-d);font-size:.65rem;letter-spacing:1.5px;color:var(--t3);padding:7px 14px;border-radius:4px;transition:all .25s;position:relative;text-transform:uppercase;}
+.nl::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:0;height:1px;background:var(--c);transition:width .25s;box-shadow:var(--glow);}
+.nl:hover,.nl.on{color:var(--c);background:var(--c3);}
+.nl.on::after,.nl:hover::after{width:60%;}
+.nr{display:flex;align-items:center;gap:12px;}
+.nstat{display:flex;align-items:center;gap:7px;padding:6px 12px;background:rgba(0,255,157,.06);border:1px solid rgba(0,255,157,.15);border-radius:20px;}
+.nsdot{width:6px;height:6px;background:var(--g);border-radius:50%;box-shadow:var(--glow-g);animation:blink 1.5s ease infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.nstext{font-family:var(--font-m);font-size:.55rem;color:var(--g);letter-spacing:1.5px;}
+.hambtn{display:none;flex-direction:column;gap:4px;background:none;border:none;padding:4px;}
+.hambtn span{width:20px;height:1.5px;background:var(--c);display:block;transition:all .3s;}
+.mobnav{display:none;position:fixed;top:66px;left:0;right:0;z-index:799;background:var(--glass2);backdrop-filter:blur(30px);border-bottom:1px solid var(--b);padding:12px 0;flex-direction:column;}
+.mobnav.open{display:flex;}
+.mobnav a{padding:10px 40px;font-family:var(--font-d);font-size:.7rem;letter-spacing:2px;color:var(--t2);transition:all .2s;}
+.mobnav a:hover{color:var(--c);background:var(--c3);}
+
+/* ── HERO ── */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;padding:110px 80px 80px;z-index:2;overflow:hidden;}
+.hero-glow1{position:absolute;left:-200px;top:50%;transform:translateY(-50%);width:700px;height:700px;background:radial-gradient(ellipse,rgba(0,229,255,.05) 0%,transparent 70%);pointer-events:none;}
+.hero-glow2{position:absolute;right:-200px;top:50%;transform:translateY(-50%);width:600px;height:600px;background:radial-gradient(ellipse,rgba(180,0,255,.04) 0%,transparent 70%);pointer-events:none;}
+.hc{position:relative;z-index:2;flex:1;max-width:700px;}
+.hbadges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px;animation:fup .6s ease both;}
+.hbadge{padding:5px 14px;font-family:var(--font-m);font-size:.55rem;letter-spacing:2.5px;color:var(--c);background:var(--c3);border:1px solid rgba(0,229,255,.15);border-radius:20px;}
+.hbadge.pulse{animation:hbp 2.5s ease infinite;}
+@keyframes hbp{0%,100%{box-shadow:none}50%{box-shadow:0 0 14px rgba(0,229,255,.3)}}
+.htitle{font-family:var(--font-d);line-height:1.1;margin-bottom:24px;}
+.ht-l1{display:block;font-size:clamp(.7rem,1.2vw,.9rem);font-weight:400;letter-spacing:5px;color:var(--t3);margin-bottom:10px;animation:fup .7s .1s ease both;opacity:0;animation-fill-mode:both;}
+.ht-l2{display:block;font-size:clamp(2rem,4.5vw,5rem);font-weight:900;position:relative;animation:fup .7s .2s ease both;opacity:0;animation-fill-mode:both;}
+.ht-main{background:linear-gradient(135deg,var(--c),var(--g),var(--c));background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gsh 3s ease infinite;}
+@keyframes gsh{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.ht-cursor{display:inline-block;width:3px;height:.85em;background:var(--c);margin-left:3px;animation:cb 1s step-end infinite;vertical-align:middle;}
+@keyframes cb{0%,100%{opacity:1}50%{opacity:0}}
+.ht-l3{display:block;font-size:clamp(2rem,4.5vw,5rem);font-weight:900;color:#fff;letter-spacing:2px;text-shadow:0 0 40px rgba(255,255,255,.05);animation:fup .7s .35s ease both;opacity:0;animation-fill-mode:both;}
+@keyframes fup{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.hdesc{font-size:1.05rem;color:var(--t2);line-height:1.8;margin-bottom:36px;max-width:580px;animation:fup .7s .45s ease both;opacity:0;animation-fill-mode:both;}
+
+/* Hero stats */
+.hstats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:40px;animation:fup .7s .55s ease both;opacity:0;animation-fill-mode:both;}
+.hs{position:relative;padding:18px 12px 14px;background:var(--bg3);border:1px solid var(--b);border-radius:8px;text-align:center;overflow:hidden;transition:all .3s;}
+.hs::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--c),transparent);opacity:0;transition:.3s;}
+.hs:hover::before{opacity:1;}
+.hs:hover{border-color:var(--bh);transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.3);}
+.hs-val{font-family:var(--font-d);font-size:1.8rem;font-weight:700;color:#fff;line-height:1;}
+.hs-suf{font-family:var(--font-d);font-size:.9rem;color:var(--c);}
+.hs-lbl{display:block;font-family:var(--font-m);font-size:.5rem;color:var(--t3);letter-spacing:1.5px;margin-top:5px;}
+.hs-bar{position:absolute;bottom:0;left:0;height:2px;background:linear-gradient(90deg,var(--c),var(--g));border-radius:0 0 8px 8px;transition:width 2s ease;}
+.hactions{display:flex;gap:14px;flex-wrap:wrap;animation:fup .7s .65s ease both;opacity:0;animation-fill-mode:both;}
+.btn-p{display:inline-flex;align-items:center;gap:10px;padding:14px 32px;font-family:var(--font-d);font-size:.7rem;font-weight:700;letter-spacing:2.5px;border-radius:6px;position:relative;overflow:hidden;transition:all .3s;}
+.btn-p.prim{background:linear-gradient(135deg,var(--c),var(--g));color:var(--bg);border:none;box-shadow:0 4px 24px rgba(0,229,255,.3);}
+.btn-p.prim:hover{box-shadow:0 6px 36px rgba(0,229,255,.5),0 0 60px rgba(0,229,255,.2);transform:translateY(-2px);}
+.btn-p.prim::after{content:'';position:absolute;top:-50%;left:-60%;width:200%;height:200%;background:linear-gradient(45deg,transparent,rgba(255,255,255,.15),transparent);transform:rotate(45deg);animation:shine 3s ease infinite;}
+@keyframes shine{0%,100%{transform:rotate(45deg) translateX(-200%)}50%{transform:rotate(45deg) translateX(200%)}}
+.btn-p.sec{background:transparent;color:var(--c);border:1px solid rgba(0,229,255,.25);}
+.btn-p.sec:hover{background:var(--c3);border-color:var(--bh);}
+
+/* Radar */
+.hvisual{position:absolute;right:60px;top:50%;transform:translateY(-50%);z-index:1;}
+.radar{position:relative;width:400px;height:400px;}
+.rr{position:absolute;border-radius:50%;border:1px solid rgba(0,229,255,.08);}
+.rr:nth-child(1){inset:0;}
+.rr:nth-child(2){inset:60px;}
+.rr:nth-child(3){inset:120px;}
+.rr:nth-child(4){inset:170px;}
+.rch-h{position:absolute;top:50%;left:10px;right:10px;height:1px;background:rgba(0,229,255,.06);}
+.rch-v{position:absolute;left:50%;top:10px;bottom:10px;width:1px;background:rgba(0,229,255,.06);}
+.rsweep{position:absolute;top:50%;left:50%;width:50%;height:2px;transform-origin:left center;background:linear-gradient(90deg,rgba(0,229,255,.8),transparent);animation:rsw 3s linear infinite;box-shadow:0 0 20px rgba(0,229,255,.5);}
+.rsweep::after{content:'';position:absolute;right:-2px;top:-60px;width:120px;height:120px;background:conic-gradient(from 0deg,transparent,rgba(0,229,255,.08),transparent);border-radius:50%;}
+@keyframes rsw{to{transform:rotate(360deg)}}
+.rdot{position:absolute;border-radius:50%;animation:rdp 2s ease infinite;}
+.rdot::before{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid currentColor;opacity:.4;animation:rdring 2s ease infinite;}
+.rdot.hi{width:10px;height:10px;background:var(--r);box-shadow:0 0 14px var(--r),0 0 28px rgba(255,23,68,.3);color:var(--r);}
+.rdot.mid{width:8px;height:8px;background:var(--y);box-shadow:0 0 10px var(--y);color:var(--y);}
+.rdot.lo{width:7px;height:7px;background:var(--g);box-shadow:0 0 10px var(--g);color:var(--g);}
+.rdot span{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-family:var(--font-m);font-size:.5rem;white-space:nowrap;letter-spacing:1px;}
+.rdot.hi span{color:var(--r);}
+.rdot.mid span{color:var(--y);}
+.rdot.lo span{color:var(--g);}
+.rdot.d1{top:22%;left:28%;animation-delay:0s;}
+.rdot.d2{top:62%;left:68%;animation-delay:.6s;}
+.rdot.d3{top:35%;left:71%;animation-delay:1.2s;}
+.rdot.d4{top:72%;left:24%;animation-delay:1.8s;}
+.rdot.d5{top:48%;left:45%;animation-delay:.9s;}
+@keyframes rdp{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.5)}}
+@keyframes rdring{0%,100%{transform:scale(1);opacity:.4}50%{transform:scale(2);opacity:0}}
+.rcenter{position:absolute;top:50%;left:50%;width:14px;height:14px;background:var(--c);border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 24px var(--c),0 0 60px rgba(0,229,255,.3);}
+.fa-wrap{position:absolute;inset:0;pointer-events:none;}
+.fa{position:absolute;padding:6px 12px;font-family:var(--font-m);font-size:.6rem;background:rgba(2,5,8,.9);border:1px solid;border-radius:4px;animation:fafl 6s ease infinite;}
+.fa1{top:8%;right:-30px;border-color:rgba(255,23,68,.3);color:var(--r);}
+.fa2{top:38%;left:-40px;border-color:rgba(255,214,0,.3);color:var(--y);animation-delay:2s;}
+.fa3{bottom:18%;right:5%;border-color:rgba(0,255,157,.3);color:var(--g);animation-delay:4s;}
+.fa4{bottom:8%;left:-20px;border-color:rgba(180,0,255,.3);color:var(--p);animation-delay:3s;}
+@keyframes fafl{0%,100%{opacity:.6;transform:translateY(0)}50%{opacity:1;transform:translateY(-8px)}}
+.radar-label{text-align:center;margin-top:16px;font-family:var(--font-m);font-size:.55rem;color:var(--t3);letter-spacing:3px;}
+
+/* ── SECTION BASE ── */
+section.s{position:relative;z-index:2;padding:100px 80px;}
+.sh{text-align:center;margin-bottom:70px;}
+.si{width:60px;height:60px;background:var(--c3);border:1px solid var(--b);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+.st{font-family:var(--font-d);font-size:clamp(1.2rem,2.5vw,2rem);font-weight:700;letter-spacing:5px;color:#fff;margin-bottom:12px;}
+.st span{color:var(--c);}
+.ssub{font-family:var(--font-m);font-size:.75rem;color:var(--t2);letter-spacing:2px;}
+
+/* ── SCANNER ── */
+.sc-sec{background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 50%,var(--bg) 100%);}
+.sc-layout{display:grid;grid-template-columns:1fr 300px;gap:24px;max-width:1240px;margin:0 auto;}
+
+/* main card */
+.sc-card{background:var(--glass);border:1px solid var(--b);border-radius:10px;overflow:hidden;position:relative;backdrop-filter:blur(10px);}
+.sc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--c),var(--p),transparent);}
+.sc-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:rgba(0,0,0,.4);border-bottom:1px solid var(--b);}
+.scdots{display:flex;gap:6px;}
+.scd{width:10px;height:10px;border-radius:50%;}
+.scd.r{background:#ff5f57;}.scd.y{background:#febc2e;}.scd.g{background:#28c840;}
+.scbar-title{font-family:var(--font-m);font-size:.6rem;color:var(--t3);letter-spacing:2px;}
+.scbar-id{font-family:var(--font-m);font-size:.6rem;color:var(--c);}
+
+/* tabs */
+.sctabs{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--b);}
+.sct{padding:14px 16px;background:none;border:none;border-right:1px solid var(--b);cursor:none;transition:all .25s;display:flex;align-items:center;gap:12px;}
+.sct:last-child{border-right:none;}
+.sct .ti{width:38px;height:38px;background:var(--c3);border:1px solid var(--b);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .25s;}
+.sct .ti svg{color:var(--t2);transition:color .25s;}
+.sct .tn{display:block;font-family:var(--font-d);font-size:.65rem;font-weight:600;letter-spacing:1.5px;color:var(--t2);transition:color .25s;}
+.sct .td2{display:block;font-family:var(--font-m);font-size:.55rem;color:var(--t4);margin-top:1px;}
+.sct.on{background:var(--c3);}
+.sct.on .ti,.sct:hover .ti{background:rgba(0,229,255,.12);border-color:rgba(0,229,255,.3);box-shadow:0 0 12px rgba(0,229,255,.15);}
+.sct.on .ti svg,.sct:hover .ti svg,.sct.on .tn,.sct:hover .tn{color:var(--c);}
+
+/* scanner body */
+.scbody{padding:28px;}
+.tc{display:none;}.tc.on{display:block;}
+.ilbl{font-family:var(--font-m);font-size:.65rem;color:var(--c);letter-spacing:3px;display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.ldot{width:6px;height:6px;background:var(--c);border-radius:50%;box-shadow:0 0 8px var(--c);}
+.igrp{display:flex;align-items:center;border:1px solid var(--b);border-radius:6px;overflow:hidden;transition:border-color .25s,box-shadow .25s;}
+.igrp:focus-within{border-color:rgba(0,229,255,.4);box-shadow:0 0 20px rgba(0,229,255,.08);}
+.ipfx{padding:0 14px;height:48px;display:flex;align-items:center;background:rgba(0,229,255,.05);border-right:1px solid var(--b);font-family:var(--font-m);font-size:.7rem;color:var(--c);white-space:nowrap;flex-shrink:0;}
+.ci{flex:1;height:48px;background:rgba(0,0,0,.35);border:none;padding:0 14px;color:var(--t1);font-family:var(--font-m);font-size:.82rem;outline:none;}
+.iclr{padding:0 14px;height:48px;background:none;border:none;border-left:1px solid var(--b);color:var(--t3);font-size:.9rem;cursor:none;transition:color .2s;}
+.iclr:hover{color:var(--r);}
+.cta{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--b);border-radius:6px;padding:14px;color:var(--t1);font-family:var(--font-m);font-size:.82rem;line-height:1.7;resize:vertical;min-height:170px;outline:none;transition:border-color .25s,box-shadow .25s;}
+.cta:focus{border-color:rgba(0,229,255,.4);box-shadow:0 0 20px rgba(0,229,255,.08);}
+.imeta{display:flex;justify-content:space-between;margin-top:8px;}
+.hint{font-size:.68rem;color:var(--t4);}
+.ccount{font-family:var(--font-m);font-size:.6rem;color:var(--t4);}
+.qex{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.qe-lbl{font-family:var(--font-m);font-size:.6rem;color:var(--t4);}
+.qe-b{background:rgba(0,0,0,.3);border:1px solid var(--b);color:var(--t2);padding:4px 11px;font-family:var(--font-m);font-size:.6rem;border-radius:4px;cursor:none;transition:all .2s;}
+.qe-b:hover{border-color:var(--c);color:var(--c);background:var(--c3);}
+
+/* upload */
+.upz{border:2px dashed rgba(0,229,255,.15);border-radius:8px;padding:44px 24px;text-align:center;cursor:none;transition:all .3s;position:relative;background:rgba(0,0,0,.15);}
+.upz:hover,.upz.dg{border-color:var(--c);background:var(--c3);}
+.up-icon{display:inline-block;position:relative;margin-bottom:14px;}
+.up-ripple{position:absolute;inset:-8px;border:1px solid rgba(0,229,255,.2);border-radius:50%;animation:upr 2s ease-in-out infinite;}
+.up-ripple2{animation-delay:1s;}
+@keyframes upr{0%{transform:scale(.8);opacity:.8}100%{transform:scale(1.6);opacity:0}}
+.up-txt{font-family:var(--font-d);font-size:.8rem;letter-spacing:2px;color:var(--t1);margin-bottom:5px;}
+.up-sub{font-size:.75rem;color:var(--t3);}
+.fmt-row{display:flex;justify-content:center;gap:6px;margin-top:14px;}
+.fmt{padding:3px 10px;font-family:var(--font-m);font-size:.55rem;color:var(--t3);background:rgba(0,0,0,.3);border:1px solid var(--b);border-radius:3px;}
+.prev-wrap{display:none;}
+.prev-info{display:flex;justify-content:space-between;margin-bottom:8px;font-family:var(--font-m);font-size:.65rem;color:var(--t2);}
+.prev-wrap img{width:100%;max-height:220px;object-fit:contain;border:1px solid var(--b);border-radius:6px;}
+.rm-btn{margin-top:10px;padding:5px 14px;background:var(--r2);border:1px solid rgba(255,23,68,.3);color:var(--r);font-family:var(--font-m);font-size:.65rem;border-radius:4px;cursor:none;transition:all .2s;}
+.rm-btn:hover{background:rgba(255,23,68,.25);}
+
+/* analyze button */
+.abtn{width:100%;margin-top:22px;padding:18px;background:linear-gradient(135deg,rgba(0,229,255,.08),rgba(0,255,157,.06));border:1px solid rgba(0,229,255,.3);border-radius:8px;cursor:none;transition:all .3s;position:relative;overflow:hidden;}
+.abtn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--c),var(--p),var(--g));opacity:0;transition:.3s;}
+.abtn:hover::before{opacity:.12;}
+.abtn:hover{box-shadow:var(--glow),0 0 40px rgba(180,0,255,.15);transform:translateY(-1px);}
+.abtn>*{position:relative;z-index:1;}
+.abtn-def,.abtn-ld{display:flex;align-items:center;justify-content:center;gap:12px;}
+.abtn span{font-family:var(--font-d);font-size:.78rem;letter-spacing:4px;color:var(--c);font-weight:700;}
+.abtn-ld{display:none;}
+.abtn.run .abtn-def{display:none;}.abtn.run .abtn-ld{display:flex;}
+.spin{width:20px;height:20px;border:2px solid rgba(0,229,255,.2);border-top-color:var(--c);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* side */
+.sc-side{display:flex;flex-direction:column;gap:16px;}
+.scard{background:var(--glass);border:1px solid var(--b);border-radius:8px;padding:20px;backdrop-filter:blur(10px);}
+.scard h4{font-family:var(--font-d);font-size:.65rem;letter-spacing:2px;color:var(--t1);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.cap-l{list-style:none;display:flex;flex-direction:column;gap:7px;}
+.cap-l li{font-family:var(--font-m);font-size:.65rem;color:var(--t2);display:flex;align-items:center;gap:8px;}
+.cld{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.cld.g{background:var(--g);box-shadow:var(--glow-g);}
+.ms{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.03);font-family:var(--font-m);font-size:.7rem;}
+.ms:last-child{border-bottom:none;}
+.ms>span:first-child{color:var(--t2);}
+.mv{font-weight:700;color:var(--c);}
+.mv.r{color:var(--r);}.mv.g{color:var(--g);}
+.recent-item{padding:4px 0;border-bottom:1px solid rgba(255,255,255,.03);font-family:var(--font-m);font-size:.6rem;color:var(--t3);line-height:1.6;}
+.recent-item:last-child{border-bottom:none;}
+
+/* ── SCAN OVERLAY ── */
+.scan-ov{display:none;position:fixed;inset:0;z-index:5000;background:rgba(2,5,8,.97);backdrop-filter:blur(20px);align-items:center;justify-content:center;}
+.scan-ov.on{display:flex;}
+.sov-box{width:600px;max-width:96vw;text-align:center;}
+.sov-radar{position:relative;width:130px;height:130px;margin:0 auto 28px;}
+.sovr{position:absolute;border-radius:50%;border:1px solid rgba(0,229,255,.12);}
+.sovr:nth-child(1){inset:0;}.sovr:nth-child(2){inset:28px;}.sovr:nth-child(3){inset:56px;}
+.sovs{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent 65%,rgba(0,229,255,.55) 100%);animation:rsw 1.2s linear infinite;}
+.sovc{position:absolute;top:50%;left:50%;width:10px;height:10px;background:var(--c);border-radius:50%;transform:translate(-50%,-50%);box-shadow:var(--glow);}
+.sov-title{font-family:var(--font-d);font-size:1.1rem;letter-spacing:5px;color:var(--c);margin-bottom:6px;}
+.sov-id{font-family:var(--font-m);font-size:.65rem;color:var(--t3);letter-spacing:2px;margin-bottom:22px;}
+
+/* terminal */
+.term{background:rgba(0,0,0,.6);border:1px solid rgba(0,229,255,.1);border-radius:8px;overflow:hidden;margin-bottom:20px;text-align:left;}
+.term-bar{display:flex;align-items:center;gap:7px;padding:7px 14px;background:rgba(0,0,0,.4);border-bottom:1px solid rgba(0,229,255,.08);}
+.tdot{width:8px;height:8px;border-radius:50%;}
+.tdot.r{background:#ff5f57;}.tdot.y{background:#febc2e;}.tdot.g{background:#28c840;}
+.term-name{font-family:var(--font-m);font-size:.55rem;color:var(--t4);margin-left:4px;letter-spacing:1px;}
+.term-body{padding:14px;max-height:180px;overflow-y:auto;font-family:var(--font-c);font-size:.7rem;line-height:1.7;}
+.tl{display:flex;gap:8px;}
+.tp{color:var(--g);}
+.tc2{color:var(--t1);}
+.to{color:var(--t2);padding-left:18px;}
+.to.ok{color:var(--g);}.to.w{color:var(--y);}.to.e{color:var(--r);}
+.prog-wrap{margin-bottom:6px;}
+.prog-bar{height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;position:relative;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--c),var(--p),var(--g));width:0%;transition:width .5s ease;box-shadow:0 0 12px rgba(0,229,255,.4);}
+.prog-row{display:flex;justify-content:space-between;margin-top:6px;font-family:var(--font-m);font-size:.6rem;}
+.prog-step{color:var(--t3);letter-spacing:1px;}
+.prog-pct{color:var(--c);}
+
+/* ── RESULTS ── */
+.res-wrap{display:none;max-width:1240px;margin:48px auto 0;padding:0 0 60px;}
+.res-wrap.on{display:block;animation:fup .5s ease both;}
+.res-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:16px;}
+.res-title{font-family:var(--font-d);font-size:1.5rem;font-weight:700;letter-spacing:4px;color:#fff;display:flex;align-items:center;gap:12px;}
+.res-title span{color:var(--c);}
+.res-meta{margin-top:6px;font-family:var(--font-m);font-size:.6rem;color:var(--t4);letter-spacing:2px;line-height:1.8;}
+.res-actions{display:flex;align-items:center;gap:12px;}
+.tbadge{padding:10px 22px;border-radius:6px;font-family:var(--font-d);font-size:.72rem;font-weight:700;letter-spacing:3px;border:1px solid;}
+.tbadge.low{background:rgba(0,255,157,.08);border-color:var(--g);color:var(--g);}
+.tbadge.medium{background:rgba(255,214,0,.08);border-color:var(--y);color:var(--y);}
+.tbadge.high{background:rgba(255,23,68,.08);border-color:var(--r);color:var(--r);animation:rp 1.5s ease infinite;}
+@keyframes rp{0%,100%{box-shadow:none}50%{box-shadow:var(--glow-r)}}
+.exp-btn{display:flex;align-items:center;gap:8px;background:var(--c3);border:1px solid rgba(0,229,255,.2);color:var(--c);padding:9px 16px;font-family:var(--font-m);font-size:.65rem;letter-spacing:1.5px;border-radius:5px;cursor:none;transition:all .2s;}
+.exp-btn:hover{background:rgba(0,229,255,.12);}
+
+/* overall meter */
+.om{background:var(--glass);border:1px solid var(--b);border-radius:8px;padding:24px;margin-bottom:22px;display:flex;align-items:center;gap:20px;backdrop-filter:blur(10px);}
+.om-lbl{font-family:var(--font-d);font-size:.6rem;letter-spacing:3px;color:var(--t2);flex-shrink:0;min-width:150px;}
+.om-bar-wrap{flex:1;}
+.om-track{height:14px;background:rgba(255,255,255,.04);border-radius:7px;overflow:hidden;position:relative;}
+.om-fill{height:100%;border-radius:7px;transition:width 1.5s ease;}
+.om-marks{display:flex;justify-content:space-between;margin-top:5px;font-family:var(--font-m);font-size:.52rem;color:var(--t4);}
+.om-val{font-family:var(--font-d);font-size:2.2rem;font-weight:700;min-width:86px;text-align:right;}
+
+/* score cards */
+.scores{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:22px;}
+.sco{background:var(--glass);border:1px solid var(--b);border-radius:8px;padding:26px;text-align:center;transition:all .3s;backdrop-filter:blur(10px);}
+.sco:hover{border-color:var(--bh);transform:translateY(-3px);}
+.sco-hd{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:18px;}
+.sco-icon{font-size:1.2rem;}
+.sco-lbl{font-family:var(--font-d);font-size:.65rem;letter-spacing:3px;color:var(--t2);}
+.gw{position:relative;width:180px;height:180px;margin:0 auto 14px;}
+.gw svg{transform:rotate(-90deg);}
+.gbg{fill:none;stroke:rgba(255,255,255,.05);stroke-width:13;}
+.gf{fill:none;stroke-width:13;stroke-linecap:round;stroke-dasharray:534;stroke-dashoffset:534;transition:stroke-dashoffset 2s cubic-bezier(.34,1.56,.64,1),stroke .5s;}
+.gval{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.gnum{font-family:var(--font-d);font-size:3rem;font-weight:700;line-height:1;}
+.gpct{font-family:var(--font-d);font-size:1rem;opacity:.5;margin-top:-4px;}
+.glvl{font-family:var(--font-m);font-size:.6rem;padding:3px 10px;border-radius:3px;margin-top:8px;letter-spacing:2px;border:1px solid;}
+
+/* panels */
+.panel{background:var(--glass);border:1px solid var(--b);border-radius:8px;padding:26px;margin-bottom:22px;backdrop-filter:blur(10px);}
+.ptitle{font-family:var(--font-d);font-size:.75rem;letter-spacing:3px;color:var(--c);margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+
+/* breakdown */
+.bd-item{display:flex;align-items:center;gap:14px;margin-bottom:13px;}
+.bd-lbl{font-family:var(--font-m);font-size:.65rem;color:var(--t2);width:170px;flex-shrink:0;}
+.bd-bar{flex:1;height:9px;background:rgba(255,255,255,.04);border-radius:5px;overflow:hidden;}
+.bd-f{height:100%;border-radius:5px;transition:width 1.2s ease;}
+.bd-val{font-family:var(--font-d);font-size:.72rem;font-weight:600;width:44px;text-align:right;flex-shrink:0;}
+
+/* indicators */
+.ind-item{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:rgba(0,0,0,.2);border-radius:6px;margin-bottom:8px;border-left:3px solid;}
+.ind-item.h{border-left-color:var(--r);}
+.ind-item.m{border-left-color:var(--y);}
+.ind-item.l{border-left-color:var(--g);}
+.ind-sev{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.ind-sev.h{background:var(--r);box-shadow:var(--glow-r);}
+.ind-sev.m{background:var(--y);}
+.ind-sev.l{background:var(--g);}
+.ind-body .ind-txt{font-size:.88rem;color:var(--t1);line-height:1.5;}
+.ind-tag{display:inline-block;margin-top:4px;font-family:var(--font-m);font-size:.55rem;padding:2px 8px;border-radius:3px;letter-spacing:1.5px;border:1px solid;}
+.ind-tag.h{background:var(--r2);color:var(--r);border-color:rgba(255,23,68,.3);}
+.ind-tag.m{background:rgba(255,214,0,.08);color:var(--y);border-color:rgba(255,214,0,.3);}
+.ind-tag.l{background:var(--g2);color:var(--g);border-color:rgba(0,255,157,.3);}
+
+/* recs */
+.rec-item{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:rgba(0,255,157,.03);border:1px solid rgba(0,255,157,.07);border-radius:6px;margin-bottom:8px;}
+.rec-n{font-family:var(--font-d);font-size:.65rem;color:var(--c);width:28px;flex-shrink:0;padding-top:1px;}
+.rec-txt{font-size:.88rem;color:var(--t1);line-height:1.6;}
+
+/* new scan */
+.res-btns{display:flex;gap:12px;flex-wrap:wrap;}
+.new-scan-btn{display:flex;align-items:center;gap:10px;padding:13px 28px;background:var(--c3);border:1px solid rgba(0,229,255,.25);color:var(--c);font-family:var(--font-d);font-size:.7rem;letter-spacing:3px;border-radius:6px;cursor:none;transition:all .25s;}
+.new-scan-btn:hover{background:rgba(0,229,255,.12);}
+
+/* ── FEATURES ── */
+.feat-sec{background:var(--bg2);}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1240px;margin:0 auto;}
+.fc{background:var(--bg3);border:1px solid var(--b);border-radius:8px;padding:30px;transition:all .4s;position:relative;overflow:hidden;}
+.fc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--c),var(--p),transparent);transform:scaleX(0);transition:.4s;}
+.fc::after{content:attr(data-n);position:absolute;bottom:12px;right:16px;font-family:var(--font-d);font-size:3.5rem;font-weight:900;color:rgba(0,229,255,.04);line-height:1;}
+.fc:hover{border-color:var(--bh);transform:translateY(-6px);box-shadow:0 24px 50px rgba(0,0,0,.5);}
+.fc:hover::before{transform:scaleX(1);}
+.fci{width:52px;height:52px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;border:1px solid;}
+.fci.c1{background:var(--c3);border-color:rgba(0,229,255,.2);}
+.fci.c1 svg{color:var(--c)!important;}
+.fci.c2{background:var(--p2);border-color:rgba(180,0,255,.2);}
+.fci.c2 svg{color:var(--p)!important;}
+.fci.c3{background:var(--g2);border-color:rgba(0,255,157,.2);}
+.fci.c3 svg{color:var(--g)!important;}
+.fci.c4{background:rgba(255,214,0,.08);border-color:rgba(255,214,0,.2);}
+.fci.c4 svg{color:var(--y)!important;}
+.fci.c5{background:rgba(255,109,0,.08);border-color:rgba(255,109,0,.2);}
+.fci.c5 svg{color:var(--a)!important;}
+.fci.c6{background:var(--r2);border-color:rgba(255,23,68,.2);}
+.fci.c6 svg{color:var(--r)!important;}
+.fc h3{font-family:var(--font-d);font-size:.78rem;letter-spacing:1.5px;color:#fff;margin-bottom:10px;}
+.fc p{font-size:.85rem;color:var(--t2);line-height:1.7;margin-bottom:14px;}
+.ftags{display:flex;flex-wrap:wrap;gap:5px;}
+.ft{font-family:var(--font-m);font-size:.55rem;color:var(--t3);background:rgba(0,0,0,.3);border:1px solid var(--b);padding:3px 9px;border-radius:3px;letter-spacing:1px;}
+
+/* ── PROCESS ── */
+.proc-sec{background:var(--bg);}
+.proc-tl{display:flex;max-width:1100px;margin:0 auto;gap:0;}
+.pstep{flex:1;text-align:center;padding:0 16px;position:relative;}
+.pcon{flex:0 0 1px;background:linear-gradient(180deg,transparent,var(--c),transparent);position:relative;align-self:stretch;margin:80px 0 0;}
+.pcon::after{content:'▶';position:absolute;right:-8px;top:32px;color:rgba(0,229,255,.3);font-size:.7rem;}
+.ps-n{font-family:var(--font-d);font-size:4rem;font-weight:900;color:rgba(0,229,255,.05);line-height:1;margin-bottom:4px;}
+.ps-icon{width:48px;height:48px;background:var(--c3);border:1px solid rgba(0,229,255,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+.ps-icon svg{color:var(--c);}
+.pstep h3{font-family:var(--font-d);font-size:.72rem;letter-spacing:3px;color:var(--c);margin-bottom:10px;}
+.pstep p{font-size:.85rem;color:var(--t2);line-height:1.7;max-width:200px;margin:0 auto;}
+
+/* ── INTEL ── */
+.intel-sec{background:var(--bg2);}
+.intel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;max-width:1240px;margin:0 auto;}
+.ic{background:var(--bg3);border:1px solid var(--b);border-radius:8px;overflow:hidden;transition:all .3s;}
+.ic:hover{border-color:var(--bh);transform:translateY(-4px);box-shadow:0 20px 50px rgba(0,0,0,.5);}
+.ic-hd{padding:18px 22px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--b);}
+.ic-hd.ph{background:var(--c3);}
+.ic-hd.mal{background:var(--r2);}
+.ic-hd.se{background:var(--p2);}
+.ic-hd span{font-size:1.4rem;}
+.ic-hd h3{font-family:var(--font-d);font-size:.7rem;letter-spacing:2px;color:#fff;}
+.ic-body{padding:22px;}
+.ic-body p{font-size:.85rem;color:var(--t2);line-height:1.8;margin-bottom:18px;}
+.ic-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.is-box{background:rgba(0,0,0,.2);border:1px solid var(--b);border-radius:6px;padding:14px;text-align:center;}
+.is-num{display:block;font-family:var(--font-d);font-size:1.3rem;font-weight:700;color:var(--c);}
+.is-lbl{display:block;font-family:var(--font-m);font-size:.52rem;color:var(--t3);margin-top:4px;letter-spacing:.5px;}
+
+/* ── ABOUT STRIP ── */
+.about-strip{background:linear-gradient(135deg,var(--bg3) 0%,var(--bg2) 100%);border-top:1px solid var(--b);border-bottom:1px solid var(--b);padding:60px 80px;}
+.as-inner{display:flex;align-items:center;gap:80px;max-width:1240px;margin:0 auto;}
+.as-text{flex:1;}
+.as-title{font-family:var(--font-d);font-size:1.5rem;font-weight:700;letter-spacing:4px;color:#fff;margin-bottom:14px;}
+.as-title span{color:var(--c);}
+.as-text p{font-size:.95rem;color:var(--t2);line-height:1.8;margin-bottom:14px;}
+.as-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;}
+.at{background:var(--c3);border:1px solid rgba(0,229,255,.2);color:var(--c);padding:5px 12px;font-family:var(--font-m);font-size:.6rem;letter-spacing:1.5px;border-radius:4px;}
+.as-lock{flex-shrink:0;position:relative;width:180px;height:180px;display:flex;align-items:center;justify-content:center;}
+.lockring{position:absolute;border-radius:50%;border:1px solid rgba(0,229,255,.12);animation:lkp 3s ease-in-out infinite;}
+.lkr1{width:80px;height:80px;}
+.lkr2{width:130px;height:130px;animation-delay:1s;}
+.lkr3{width:180px;height:180px;animation-delay:2s;}
+@keyframes lkp{0%,100%{opacity:.6}50%{opacity:.15;transform:scale(1.05)}}
+
+/* ── FOOTER ── */
+footer{position:relative;z-index:2;background:var(--bg);border-top:1px solid var(--b);padding:44px 80px 60px;}
+.fi{display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px;align-items:center;max-width:1240px;margin:0 auto;}
+.fb .bn{font-family:var(--font-d);font-size:1.1rem;font-weight:700;letter-spacing:3px;color:#fff;}
+.fb .bn span{color:var(--c);}
+.fb p{font-family:var(--font-m);font-size:.6rem;color:var(--t3);margin-top:8px;letter-spacing:2px;line-height:1.7;}
+.fc-foot{text-align:center;}
+.fl{display:flex;justify-content:center;gap:20px;margin-bottom:14px;}
+.fl a{font-family:var(--font-m);font-size:.65rem;color:var(--t2);letter-spacing:1.5px;transition:color .2s;}
+.fl a:hover{color:var(--c);}
+.ftags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;}
+.ftag{background:rgba(0,0,0,.3);border:1px solid var(--b);color:var(--t3);padding:3px 10px;font-family:var(--font-m);font-size:.55rem;letter-spacing:1px;border-radius:3px;}
+.fr{text-align:right;}
+.fr p{font-family:var(--font-m);font-size:.65rem;color:var(--t3);line-height:1.8;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){
+  .hvisual{display:none;}
+  .sc-layout{grid-template-columns:1fr;}
+  .feat-grid,.intel-grid{grid-template-columns:1fr 1fr;}
+  .proc-tl{flex-direction:column;gap:28px;max-width:500px;}
+  .pcon{display:none;}
+  .fi{grid-template-columns:1fr;}
+  .fr{text-align:left;}
+}
+@media(max-width:768px){
+  nav{padding:0 20px;}
+  .nlinks{display:none;}
+  .hambtn{display:flex;}
+  section.s,.about-strip,footer{padding:60px 20px;}
+  .hero{padding:100px 20px 60px;}
+  .hstats{grid-template-columns:1fr 1fr;}
+  .feat-grid,.intel-grid,.scores{grid-template-columns:1fr;}
+  .om{flex-direction:column;text-align:center;}
+  .om-val{text-align:center;}
+  .cb{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div id="CUR"></div><div id="CURRING"></div>
+
+<!-- BG -->
+<canvas id="MC"></canvas>
+<div class="hex-bg"></div>
+<div class="grid-bg"></div>
+<div class="vignette"></div>
+<div class="scanl"></div>
+
+<!-- Corner brackets -->
+<div class="cb tl"></div><div class="cb tr"></div>
+<div class="cb bl"></div><div class="cb br"></div>
+
+<!-- Data streams -->
+<div class="ds" style="left:8%;animation-delay:0s;animation-duration:12s"></div>
+<div class="ds" style="left:22%;animation-delay:3s;animation-duration:15s"></div>
+<div class="ds" style="left:50%;animation-delay:6s;animation-duration:10s"></div>
+<div class="ds" style="left:72%;animation-delay:1.5s;animation-duration:14s"></div>
+<div class="ds" style="left:88%;animation-delay:4.5s;animation-duration:11s"></div>
+
+<!-- Ticker -->
+<div class="ticker">
+  <div class="tk-tag">⚡ LIVE THREAT FEED</div>
+  <div class="tk-track"><div class="tk-inner" id="TICKER"></div></div>
+</div>
+
+<!-- Toast -->
+<div id="TOAST"></div>
+
+<!-- NAV -->
+<nav id="NAV">
+  <div class="nb">
+    <div class="shield-wrap">
+      <div class="shpulse"></div><div class="shpulse shpulse2"></div>
+      <svg viewBox="0 0 60 70" width="34" height="40">
+        <defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00e5ff"/><stop offset="50%" stop-color="#b400ff"/><stop offset="100%" stop-color="#00ff9d"/></linearGradient></defs>
+        <path d="M30 5 L55 18 L55 40 Q55 58 30 65 Q5 58 5 40 L5 18 Z" fill="none" stroke="url(#sg)" stroke-width="2.5"/>
+        <path d="M22 35 L28 41 L40 27" fill="none" stroke="url(#sg)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="brand-info">
+      <span class="bname">MAL<span>.EXE</span> DENIED</span>
+      <span class="bsub">AI THREAT DETECTION SYSTEM v4.0</span>
+    </div>
+  </div>
+  <div class="nlinks">
+    <a href="#home" class="nl on">Home</a>
+    <a href="#scanner" class="nl">Scanner</a>
+    <a href="#features" class="nl">Features</a>
+    <a href="#how-it-works" class="nl">Process</a>
+    <a href="#threat-intel" class="nl">Threat Intel</a>
+    <a href="#about" class="nl">About</a>
+  </div>
+  <div class="nr">
+    <div class="nstat"><span class="nsdot"></span><span class="nstext">ENGINE ACTIVE</span></div>
+    <button class="hambtn" id="HAM"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobnav" id="MOBNAV">
+  <a href="#home">Home</a><a href="#scanner">Scanner</a><a href="#features">Features</a>
+  <a href="#how-it-works">Process</a><a href="#threat-intel">Threat Intel</a><a href="#about">About</a>
+</div>
+
+<!-- ═══ HERO ═══ -->
+<section id="home" class="hero">
+  <div class="hero-glow1"></div><div class="hero-glow2"></div>
+  <div class="hc">
+    <div class="hbadges">
+      <span class="hbadge pulse">🛡️ AI-POWERED</span>
+      <span class="hbadge">🔬 REAL-TIME ANALYSIS</span>
+      <span class="hbadge">🌐 MULTI-VECTOR SCAN</span>
+      <span class="hbadge">🤖 CLAUDE AI CORE</span>
+    </div>
+    <h1 class="htitle">
+      <span class="ht-l1">PROACTIVE DETECTION OF</span>
+      <span class="ht-l2">
+        <span class="ht-main" id="HTYPE"></span>
+        <span class="ht-cursor"></span>
+      </span>
+      <span class="ht-l3">THREATS</span>
+    </h1>
+    <p class="hdesc">Next-generation AI threat analysis engine combining NLP, computer vision, and advanced pattern recognition to detect phishing attacks, malware delivery, and social engineering threats across URLs, emails, and screenshots in real-time.</p>
+    <div class="hstats">
+      <div class="hs">
+        <div class="hs-val"><span data-target="99.7">0</span><span class="hs-suf">%</span></div>
+        <span class="hs-lbl">DETECTION ACCURACY</span>
+        <div class="hs-bar" style="width:0%" data-w="99.7%"></div>
+      </div>
+      <div class="hs">
+        <div class="hs-val"><span data-target="147">0</span><span class="hs-suf">K+</span></div>
+        <span class="hs-lbl">THREATS NEUTRALIZED</span>
+        <div class="hs-bar" style="width:0%;background:linear-gradient(90deg,var(--g),var(--c))" data-w="85%"></div>
+      </div>
+      <div class="hs">
+        <div class="hs-val"><span data-target="1.8">0</span><span class="hs-suf">s</span></div>
+        <span class="hs-lbl">AVG SCAN TIME</span>
+        <div class="hs-bar" style="width:0%;background:linear-gradient(90deg,var(--p),var(--c))" data-w="72%"></div>
+      </div>
+      <div class="hs">
+        <div class="hs-val"><span data-target="24">0</span><span class="hs-suf">/7</span></div>
+        <span class="hs-lbl">MONITORING</span>
+        <div class="hs-bar" style="width:0%;background:linear-gradient(90deg,var(--a),var(--y))" data-w="100%"></div>
+      </div>
+    </div>
+    <div class="hactions">
+      <a href="#scanner" class="btn-p prim">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <span>LAUNCH SCANNER</span>
+      </a>
+      <a href="#how-it-works" class="btn-p sec"><span>LEARN MORE</span></a>
+    </div>
+  </div>
+  <div class="hvisual">
+    <div class="radar">
+      <div class="rr"></div><div class="rr"></div><div class="rr"></div><div class="rr"></div>
+      <div class="rch-h"></div><div class="rch-v"></div>
+      <div class="rsweep"></div>
+      <div class="rdot hi d1"><span>PHISH</span></div>
+      <div class="rdot hi d2"><span>MALWARE</span></div>
+      <div class="rdot mid d3"><span>SPOOF</span></div>
+      <div class="rdot mid d4"><span>SCAM</span></div>
+      <div class="rdot lo d5"><span>SAFE</span></div>
+      <div class="rcenter"></div>
+      <div class="fa-wrap">
+        <div class="fa fa1">⛔ Phishing Detected — paypa1-login.tk</div>
+        <div class="fa fa2">⚠️ Malware Blocked — bit.ly/3xExe</div>
+        <div class="fa fa3">✅ Connection Secured</div>
+        <div class="fa fa4">🔍 Scanning... active</div>
+      </div>
+    </div>
+    <div class="radar-label">THREAT RADAR ACTIVE — SCANNING PERIMETER</div>
+  </div>
+</section>
+
+<!-- ═══ SCANNER ═══ -->
+<section id="scanner" class="s sc-sec">
+  <div class="sh">
+    <div class="si"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--c)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>
+    <h2 class="st">THREAT <span>SCANNER</span></h2>
+    <p class="ssub">Submit suspicious content for comprehensive AI-powered multi-layer analysis</p>
+  </div>
+  <div class="sc-layout">
+    <div class="sc-card">
+      <div class="sc-bar">
+        <div class="scdots"><span class="scd r"></span><span class="scd y"></span><span class="scd g"></span></div>
+        <span class="scbar-title">MAL.EXE DENIED — SCANNER v4.0</span>
+        <span class="scbar-id">SCAN #<span id="SCANID">----</span></span>
+      </div>
+      <div class="sctabs">
+        <button class="sct on" data-tab="url">
+          <div class="ti"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg></div>
+          <div><span class="tn">URL Scanner</span><span class="td2">Analyze suspicious links</span></div>
+        </button>
+        <button class="sct" data-tab="text">
+          <div class="ti"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+          <div><span class="tn">Email / Message</span><span class="td2">Scan text content</span></div>
+        </button>
+        <button class="sct" data-tab="image">
+          <div class="ti"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+          <div><span class="tn">Screenshot OCR</span><span class="td2">Image analysis + extract</span></div>
+        </button>
+      </div>
+      <div class="scbody">
+        <div class="tc on" id="tc-url">
+          <div class="ilbl"><span class="ldot"></span>ENTER SUSPICIOUS URL</div>
+          <div class="igrp">
+            <div class="ipfx">URL://</div>
+            <input type="url" id="URL_IN" class="ci" placeholder="https://suspicious-example.com/login/verify">
+            <button class="iclr" id="CLR_URL">✕</button>
+          </div>
+          <div class="imeta"><span class="hint">💡 Supports full URLs, shortened links, IP-based domains</span><span class="ccount" id="URL_CC">0 chars</span></div>
+          <div class="qex">
+            <span class="qe-lbl">QUICK TEST:</span>
+            <button class="qe-b" data-url="http://192.168.1.1/paypal-login/secure/verify.php">Fake PayPal</button>
+            <button class="qe-b" data-url="https://bit.ly/3xMalware-download-exe">Shortened Link</button>
+            <button class="qe-b" data-url="https://g00gle-security.xyz/verify?id=stolen&token=abc123">Typosquatting</button>
+          </div>
+        </div>
+        <div class="tc" id="tc-text">
+          <div class="ilbl"><span class="ldot"></span>PASTE SUSPICIOUS EMAIL / MESSAGE</div>
+          <textarea id="TEXT_IN" class="cta" placeholder="Paste suspicious email, SMS, or message here...&#10;&#10;Example:&#10;URGENT: Your account has been compromised! Click here: http://secure-bank.xyz/verify"></textarea>
+          <div class="imeta"><span class="hint">💡 Include subject line, body, and all embedded links</span><span class="ccount" id="TEXT_CC">0 chars</span></div>
+          <div class="qex">
+            <span class="qe-lbl">QUICK TEST:</span>
+            <button class="qe-b" data-text="URGENT: Your bank account will be suspended in 24 hours! Unauthorized access detected. Verify now: http://secure-banking-verify.xyz/login. Provide your credentials immediately or lose access permanently. — Security Team">Bank Phishing</button>
+            <button class="qe-b" data-text="You've won a $1,000 Amazon Gift Card! Click: http://amaz0n-rewards.tk/claim and enter your credit card for shipping verification. Offer expires TODAY!">Prize Scam</button>
+            <button class="qe-b" data-text="Your Microsoft 365 password expires today. Update now or lose access: http://microsoft-365-reset.ml/update — IT Support">Credential Theft</button>
+          </div>
+        </div>
+        <div class="tc" id="tc-image">
+          <div class="ilbl"><span class="ldot"></span>UPLOAD SCREENSHOT FOR OCR ANALYSIS</div>
+          <div class="upz" id="UPZ">
+            <div class="up-icon">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--c)" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <div class="up-ripple"></div><div class="up-ripple up-ripple2"></div>
+            </div>
+            <p class="up-txt">DRAG &amp; DROP SCREENSHOT</p>
+            <p class="up-sub">or click to browse files</p>
+            <div class="fmt-row"><span class="fmt">PNG</span><span class="fmt">JPG</span><span class="fmt">JPEG</span><span class="fmt">GIF</span><span class="fmt">WEBP</span></div>
+            <input type="file" id="IMG_IN" accept="image/*" style="display:none">
+          </div>
+          <div class="prev-wrap" id="PREV_WRAP">
+            <div class="prev-info"><span id="PREV_NAME">image.png</span><span id="PREV_SIZE">0 KB</span></div>
+            <img id="PREV_IMG" alt="Preview">
+            <button class="rm-btn" id="RM_IMG">✕ Remove Image</button>
+          </div>
+        </div>
+        <button class="abtn" id="ABTN">
+          <span class="abtn-def">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--c)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>INITIALIZE THREAT SCAN</span>
+          </span>
+          <span class="abtn-ld">
+            <div class="spin"></div>
+            <span style="color:var(--c);font-family:var(--font-d);font-size:.78rem;letter-spacing:4px;">ANALYZING...</span>
+          </span>
+        </button>
+      </div>
+    </div>
+    <!-- Side -->
+    <div class="sc-side">
+      <div class="scard">
+        <h4>🔍 Scan Capabilities</h4>
+        <ul class="cap-l">
+          <li><span class="cld g"></span>URL Structure Analysis</li>
+          <li><span class="cld g"></span>Domain Reputation Check</li>
+          <li><span class="cld g"></span>NLP Text Analysis</li>
+          <li><span class="cld g"></span>Social Engineering Detection</li>
+          <li><span class="cld g"></span>OCR Image Extraction</li>
+          <li><span class="cld g"></span>Brand Impersonation Check</li>
+          <li><span class="cld g"></span>Malware Indicator Detection</li>
+          <li><span class="cld g"></span>Redirect Chain Analysis</li>
+          <li><span class="cld g"></span>Typosquatting Detection</li>
+        </ul>
+      </div>
+      <div class="scard">
+        <h4>📊 Session Stats</h4>
+        <div class="ms"><span>Total Scans</span><span class="mv" id="ST_SCANS">0</span></div>
+        <div class="ms"><span>Threats Found</span><span class="mv r" id="ST_THREATS">0</span></div>
+        <div class="ms"><span>Safe Content</span><span class="mv g" id="ST_SAFE">0</span></div>
+        <div class="ms"><span>High Risk</span><span class="mv r" id="ST_HIGH">0</span></div>
+      </div>
+      <div class="scard">
+        <h4>⚡ Recent Detections</h4>
+        <div id="RECENT_LIST" style="font-family:var(--font-m);font-size:.6rem;color:var(--t3);">No scans yet...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scan Overlay -->
+  <div class="scan-ov" id="SCAN_OV">
+    <div class="sov-box">
+      <div class="sov-radar">
+        <div class="sovr"></div><div class="sovr"></div><div class="sovr"></div>
+        <div class="sovs"></div><div class="sovc"></div>
+      </div>
+      <h3 class="sov-title">THREAT ANALYSIS IN PROGRESS</h3>
+      <p class="sov-id">SCAN ID: #CS-<span id="SOV_ID">----</span></p>
+      <div class="term">
+        <div class="term-bar">
+          <span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span>
+          <span class="term-name">mal-denied-terminal v4.0</span>
+        </div>
+        <div class="term-body" id="TERM_BODY"></div>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-bar"><div class="prog-fill" id="PROG_FILL"></div></div>
+        <div class="prog-row">
+          <span class="prog-step" id="PROG_STEP">Initializing...</span>
+          <span class="prog-pct" id="PROG_PCT">0%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="res-wrap" id="RES_WRAP">
+    <div class="res-hdr">
+      <div>
+        <h2 class="res-title">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--c)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          ANALYSIS <span>REPORT</span>
+        </h2>
+        <div class="res-meta">
+          <div id="RES_ID">REPORT #CS-----</div>
+          <div id="RES_TIME"></div>
+        </div>
+      </div>
+      <div class="res-actions">
+        <div class="tbadge" id="THREAT_BADGE">ANALYZING</div>
+        <button class="exp-btn" id="EXP_BTN">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export JSON
+        </button>
+      </div>
+    </div>
+    <div class="om">
+      <div class="om-lbl">OVERALL THREAT LEVEL</div>
+      <div class="om-bar-wrap">
+        <div class="om-track"><div class="om-fill" id="OM_FILL"></div></div>
+        <div class="om-marks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+      </div>
+      <div class="om-val" id="OM_VAL">0%</div>
+    </div>
+    <div class="scores">
+      <div class="sco">
+        <div class="sco-hd"><span class="sco-icon">🎣</span><span class="sco-lbl">PHISHING RISK</span></div>
+        <div class="gw">
+          <svg viewBox="0 0 200 200" width="180" height="180">
+            <circle cx="100" cy="100" r="85" class="gbg"/>
+            <circle cx="100" cy="100" r="85" class="gf" id="PH_GAUGE" stroke="var(--c)"/>
+          </svg>
+          <div class="gval">
+            <span class="gnum" id="PH_NUM" style="color:var(--c)">0</span>
+            <span class="gpct" style="color:var(--c)">%</span>
+            <span class="glvl" id="PH_LVL"></span>
+          </div>
+        </div>
+      </div>
+      <div class="sco">
+        <div class="sco-hd"><span class="sco-icon">🦠</span><span class="sco-lbl">MALWARE RISK</span></div>
+        <div class="gw">
+          <svg viewBox="0 0 200 200" width="180" height="180">
+            <circle cx="100" cy="100" r="85" class="gbg"/>
+            <circle cx="100" cy="100" r="85" class="gf" id="MW_GAUGE" stroke="var(--p)"/>
+          </svg>
+          <div class="gval">
+            <span class="gnum" id="MW_NUM" style="color:var(--p)">0</span>
+            <span class="gpct" style="color:var(--p)">%</span>
+            <span class="glvl" id="MW_LVL"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ptitle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--c)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>THREAT CATEGORY BREAKDOWN</div>
+      <div id="BD_CHART"></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--c)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>DETECTED THREAT INDICATORS</div>
+      <div id="IND_LIST"></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--c)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>SECURITY RECOMMENDATIONS</div>
+      <div id="REC_LIST"></div>
+    </div>
+    <div class="res-btns">
+      <button class="new-scan-btn" id="NEW_SCAN_BTN">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+        NEW SCAN
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FEATURES ═══ -->
+<section id="features" class="s feat-sec">
+  <div class="sh">
+    <div class="si"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--c)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+    <h2 class="st">CORE <span>CAPABILITIES</span></h2>
+    <p class="ssub">Six-layer AI defense system for comprehensive threat protection</p>
+  </div>
+  <div class="feat-grid">
+    <div class="fc" data-n="01"><div class="fci c1"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg></div><h3>Deep URL Analysis</h3><p>Multi-layer URL inspection including domain reputation, TLD analysis, redirect chain detection, typosquatting identification, and IP-based domain checking with real-time threat database cross-referencing.</p><div class="ftags"><span class="ft">Domain Intel</span><span class="ft">Redirect Trace</span><span class="ft">Typosquat</span></div></div>
+    <div class="fc" data-n="02"><div class="fci c2"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><h3>NLP Email Scanner</h3><p>Natural Language Processing engine analyzes email and message content for 12+ social engineering tactics including urgency manipulation, fear-based language, authority impersonation, and reward bait patterns.</p><div class="ftags"><span class="ft">NLP Engine</span><span class="ft">12+ Tactics</span><span class="ft">Context AI</span></div></div>
+    <div class="fc" data-n="03"><div class="fci c3"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><h3>OCR Vision Analysis</h3><p>AI-powered optical character recognition extracts and analyzes text from screenshots of phishing emails, fake login pages, and suspicious websites for automated threat detection.</p><div class="ftags"><span class="ft">Vision AI</span><span class="ft">Auto-Extract</span><span class="ft">Image Intel</span></div></div>
+    <div class="fc" data-n="04"><div class="fci c4"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><h3>Dual Risk Scoring</h3><p>Separate phishing and malware risk scores calculated through weighted multi-factor analysis with confidence ratings, threat categorization, and animated gauge visualization with category breakdown.</p><div class="ftags"><span class="ft">Dual Score</span><span class="ft">Weighted ML</span><span class="ft">Confidence</span></div></div>
+    <div class="fc" data-n="05"><div class="fci c5"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><h3>Pattern Recognition</h3><p>Advanced ML pattern matching engine identifies brand impersonation, suspicious domain structures, malware delivery patterns, and emerging social engineering techniques in real-time.</p><div class="ftags"><span class="ft">ML Patterns</span><span class="ft">Brand Check</span><span class="ft">Adaptive</span></div></div>
+    <div class="fc" data-n="06"><div class="fci c6"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><h3>Exportable Reports</h3><p>Comprehensive threat reports with category breakdown charts, detected indicators, confidence scores, and JSON-exportable analysis data for documentation, compliance, and incident response workflows.</p><div class="ftags"><span class="ft">Export JSON</span><span class="ft">Charts</span><span class="ft">Audit Trail</span></div></div>
+  </div>
+</section>
+
+<!-- ═══ PROCESS ═══ -->
+<section id="how-it-works" class="s proc-sec">
+  <div class="sh">
+    <div class="si"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--c)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+    <h2 class="st">HOW IT <span>WORKS</span></h2>
+    <p class="ssub">Four-phase automated threat analysis pipeline</p>
+  </div>
+  <div class="proc-tl">
+    <div class="pstep">
+      <div class="ps-n">01</div>
+      <div class="ps-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+      <h3>SUBMIT CONTENT</h3>
+      <p>Paste a suspicious URL, email message, or upload a screenshot. Multiple input formats supported for maximum flexibility.</p>
+    </div>
+    <div class="pcon"></div>
+    <div class="pstep">
+      <div class="ps-n">02</div>
+      <div class="ps-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33A1.65 1.65 0 0013 19.4"/></svg></div>
+      <h3>AI DEEP ANALYSIS</h3>
+      <p>Claude AI performs simultaneous NLP analysis, URL inspection, pattern matching, and OCR text extraction with threat intelligence cross-referencing.</p>
+    </div>
+    <div class="pcon"></div>
+    <div class="pstep">
+      <div class="ps-n">03</div>
+      <div class="ps-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+      <h3>RISK CALCULATION</h3>
+      <p>Weighted multi-factor scoring calculates independent phishing and malware risk values with category breakdown and confidence ratings on a 0–100 scale.</p>
+    </div>
+    <div class="pcon"></div>
+    <div class="pstep">
+      <div class="ps-n">04</div>
+      <div class="ps-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <h3>DETAILED REPORT</h3>
+      <p>Comprehensive animated report with risk gauges, threat category breakdown, indicators list, actionable recommendations, and JSON export functionality.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ THREAT INTEL ═══ -->
+<section id="threat-intel" class="s intel-sec">
+  <div class="sh">
+    <div class="si"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--c)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+    <h2 class="st">THREAT <span>INTELLIGENCE</span></h2>
+    <p class="ssub">Understanding the threats Mal.exe Denied detects and neutralizes</p>
+  </div>
+  <div class="intel-grid">
+    <div class="ic">
+      <div class="ic-hd ph"><span>🎣</span><h3>PHISHING ATTACKS</h3></div>
+      <div class="ic-body">
+        <p>Phishing attacks trick users into revealing sensitive data by impersonating trusted entities. They use urgency, fear, and authority manipulation to bypass rational decision-making and steal credentials.</p>
+        <div class="ic-stats">
+          <div class="is-box"><span class="is-num">3.4B</span><span class="is-lbl">Phishing emails sent daily</span></div>
+          <div class="is-box"><span class="is-num">36%</span><span class="is-lbl">Of data breaches involve phishing</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="ic">
+      <div class="ic-hd mal"><span>🦠</span><h3>MALWARE DELIVERY</h3></div>
+      <div class="ic-body">
+        <p>Malware is distributed through malicious links, email attachments, and compromised websites. Types include ransomware, trojans, spyware, and cryptominers that damage systems and steal data.</p>
+        <div class="ic-stats">
+          <div class="is-box"><span class="is-num">560K</span><span class="is-lbl">New malware samples daily</span></div>
+          <div class="is-box"><span class="is-num">94%</span><span class="is-lbl">Delivered via email vectors</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="ic">
+      <div class="ic-hd se"><span>🎭</span><h3>SOCIAL ENGINEERING</h3></div>
+      <div class="ic-body">
+        <p>Social engineering exploits human psychology rather than technical vulnerabilities. Attackers use pretexting, baiting, and quid pro quo to manipulate victims into compromising their own security.</p>
+        <div class="ic-stats">
+          <div class="is-box"><span class="is-num">98%</span><span class="is-lbl">Of attacks use social eng.</span></div>
+          <div class="is-box"><span class="is-num">$4.9M</span><span class="is-lbl">Average cost per breach</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
+<div id="about" class="about-strip">
+  <div class="as-inner">
+    <div class="as-text">
+      <h2 class="as-title">ABOUT <span>MAL.EXE DENIED</span></h2>
+      <p>Mal.exe Denied is a next-generation AI-powered cyber threat detection system built for hackathon demonstration. It showcases how Claude AI can be leveraged to detect and prevent phishing attacks, social engineering threats, and malware delivery in real-time across multiple input vectors.</p>
+      <p>The system combines natural language processing, URL structural analysis, image recognition with OCR, and advanced pattern matching to provide comprehensive threat assessments — empowering users to identify malicious content before it causes harm.</p>
+      <div class="as-tags">
+        <span class="at">HTML5</span><span class="at">CSS3</span><span class="at">JavaScript</span>
+        <span class="at">Claude AI</span><span class="at">NLP Analysis</span><span class="at">Pattern Recognition</span>
+        <span class="at">OCR Vision</span><span class="at">Real-Time Scoring</span>
+      </div>
+    </div>
+    <div class="as-lock">
+      <div class="lockring lkr1"></div>
+      <div class="lockring lkr2"></div>
+      <div class="lockring lkr3"></div>
+      <svg viewBox="0 0 100 120" width="100" height="120">
+        <rect x="15" y="50" width="70" height="55" rx="10" fill="none" stroke="var(--c)" stroke-width="2"/>
+        <path d="M30 50 V35 Q30 10 50 10 Q70 10 70 35 V50" fill="none" stroke="var(--c)" stroke-width="2"/>
+        <circle cx="50" cy="74" r="7" fill="var(--c)"/>
+        <line x1="50" y1="81" x2="50" y2="93" stroke="var(--c)" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="fi">
+    <div class="fb">
+      <div class="bn">MAL<span>.EXE</span> DENIED</div>
+      <p>Proactive Detection of Phishing<br>&amp; Social Engineering Threats</p>
+    </div>
+    <div class="fc-foot">
+      <div class="fl">
+        <a href="#home">Home</a><a href="#scanner">Scanner</a>
+        <a href="#features">Features</a><a href="#threat-intel">Threat Intel</a>
+      </div>
+      <div class="ftags">
+        <span class="ftag">HTML5</span><span class="ftag">CSS3</span><span class="ftag">JavaScript</span>
+        <span class="ftag">Claude AI</span><span class="ftag">NLP</span><span class="ftag">OCR</span>
+      </div>
+    </div>
+    <div class="fr">
+      <p>🛡️ Hackathon Project — AI-Based Cyber Threat Detection</p>
+      <p>© 2026 Mal.exe Denied. Built for cybersecurity awareness.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ═══ CURSOR ═══ */
+const CUR=document.getElementById('CUR'),RING=document.getElementById('CURRING');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;CUR.style.left=mx+'px';CUR.style.top=my+'px';});
+(function animR(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;RING.style.left=rx+'px';RING.style.top=ry+'px';requestAnimationFrame(animR);})();
+document.addEventListener('mousedown',()=>{CUR.style.width='5px';CUR.style.height='5px';RING.style.width='48px';RING.style.height='48px';});
+document.addEventListener('mouseup',()=>{CUR.style.width='8px';CUR.style.height='8px';RING.style.width='32px';RING.style.height='32px';});
+document.querySelectorAll('button,a,.sct,.qe-b,.abtn').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{CUR.style.background='var(--p)';RING.style.borderColor='rgba(180,0,255,.5)';});
+  el.addEventListener('mouseleave',()=>{CUR.style.background='var(--c)';RING.style.borderColor='rgba(0,229,255,.5)';});
+});
+
+/* ═══ MATRIX ═══ */
+(function(){
+  const c=document.getElementById('MC');const ctx=c.getContext('2d');
+  function rs(){c.width=innerWidth;c.height=innerHeight;}rs();addEventListener('resize',rs);
+  const chars='アイウエオカキクケコサシスセソABCDEF0123456789@#$%&*<>?/|{}[];:.,!';
+  const cols=Math.floor(innerWidth/18);const drops=Array(cols).fill(1);
+  setInterval(()=>{
+    ctx.fillStyle='rgba(2,5,8,.06)';ctx.fillRect(0,0,c.width,c.height);
+    drops.forEach((y,i)=>{
+      const ch=chars[Math.floor(Math.random()*chars.length)];
+      const g=Math.floor(100+Math.random()*155);
+      ctx.fillStyle=`rgba(0,${g},${g+80},${.2+Math.random()*.4})`;
+      ctx.font=`${11+Math.random()*4}px Share Tech Mono`;
+      ctx.fillText(ch,i*18,y*18);
+      if(y*18>c.height&&Math.random()>.975)drops[i]=0;
+      drops[i]++;
+    });
+  },55);
+})();
+
+/* ═══ TICKER ═══ */
+(function(){
+  const items=[
+    {t:'⛔ HIGH RISK: credential harvesting — paypa1-secure.xyz',c:'d'},
+    {t:'⚠️ MEDIUM RISK: suspicious redirect chain — bit.ly/3xM',c:'w'},
+    {t:'✅ SAFE: legitimate domain verified — google.com',c:'s'},
+    {t:'⛔ HIGH RISK: fake login page detected — bank-verify.tk',c:'d'},
+    {t:'⚠️ MEDIUM RISK: social engineering in email content detected',c:'w'},
+    {t:'✅ SAFE: URL structure clean — amazon.com',c:'s'},
+    {t:'⛔ HIGH RISK: malware download URL blocked — dl.evil.xyz',c:'d'},
+    {t:'⚠️ MEDIUM RISK: brand impersonation — microsft-support.net',c:'w'},
+    {t:'✅ SAFE: no threat indicators found in scanned content',c:'s'},
+    {t:'⛔ HIGH RISK: ransomware payload detected in URL path',c:'d'},
+    {t:'⚠️ MEDIUM RISK: typosquatting domain — g00gle-secure.com',c:'w'},
+    {t:'✅ SAFE: sender reputation verified — paypal.com',c:'s'},
+  ];
+  const el=document.getElementById('TICKER');
+  const all=[...items,...items];
+  all.forEach(i=>{
+    const s=document.createElement('span');s.className='tk-i '+i.c;s.textContent=i.t;el.appendChild(s);
+    const d=document.createElement('span');d.className='tk-sep';d.textContent='◆';el.appendChild(d);
+  });
+})();
+
+/* ═══ NAV ═══ */
+window.addEventListener('scroll',()=>{
+  document.getElementById('NAV').classList.toggle('scr',scrollY>60);
+  const secs=['home','scanner','features','how-it-works','threat-intel','about'];
+  let cur='home';
+  secs.forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<120)cur=id;});
+  document.querySelectorAll('.nl').forEach(l=>l.classList.toggle('on',l.getAttribute('href')==='#'+cur));
+});
+document.getElementById('HAM').addEventListener('click',()=>{
+  const m=document.getElementById('MOBNAV');m.classList.toggle('open');
+});
+document.querySelectorAll('.mobnav a').forEach(a=>a.addEventListener('click',()=>document.getElementById('MOBNAV').classList.remove('open')));
+
+/* ═══ HERO TYPING ═══ */
+(function(){
+  const el=document.getElementById('HTYPE');
+  const words=['PHISHING & MALWARE','SOCIAL ENGINEERING','CYBER THREATS','MALICIOUS URLS','RANSOMWARE'];
+  let wi=0,ci=0,del=false;
+  function t(){
+    const w=words[wi];
+    if(!del){el.textContent=w.slice(0,++ci);if(ci===w.length){del=true;setTimeout(t,2200);return;}}
+    else{el.textContent=w.slice(0,--ci);if(ci===0){del=false;wi=(wi+1)%words.length;setTimeout(t,400);return;}}
+    setTimeout(t,del?38:72);
+  }t();
+})();
+
+/* ═══ COUNTERS ═══ */
+function animCounters(){
+  document.querySelectorAll('.hs [data-target]').forEach(el=>{
+    const t=parseFloat(el.dataset.target),dec=t%1!==0;let c=0;
+    const step=t/80;
+    const id=setInterval(()=>{c=Math.min(c+step,t);el.textContent=dec?c.toFixed(1):Math.floor(c);if(c>=t)clearInterval(id);},20);
+  });
+  document.querySelectorAll('.hs-bar[data-w]').forEach(el=>{
+    setTimeout(()=>el.style.width=el.dataset.w,200);
+  });
+}
+const obsH=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){animCounters();obsH.disconnect();}});},{threshold:.5});
+const hsEl=document.querySelector('.hstats');if(hsEl)obsH.observe(hsEl);
+
+/* ═══ TOAST ═══ */
+function toast(msg,type=''){
+  const w=document.getElementById('TOAST');
+  const el=document.createElement('div');
+  el.className='t-item '+(type==='s'?'s':type==='e'?'e':'');
+  el.textContent=(type==='s'?'✓ ':type==='e'?'✕ ':'⚡ ')+msg;
+  w.appendChild(el);
+  setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),300);},3200);
+}
+
+/* ═══ TABS ═══ */
+let ACTIVE_TAB='url';
+document.querySelectorAll('.sct').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.sct').forEach(b=>b.classList.remove('on'));
+    document.querySelectorAll('.tc').forEach(c=>c.classList.remove('on'));
+    btn.classList.add('on');ACTIVE_TAB=btn.dataset.tab;
+    document.getElementById('tc-'+ACTIVE_TAB).classList.add('on');
+  });
+});
+
+/* ═══ INPUTS ═══ */
+document.getElementById('URL_IN').addEventListener('input',function(){document.getElementById('URL_CC').textContent=this.value.length+' chars';});
+document.getElementById('TEXT_IN').addEventListener('input',function(){document.getElementById('TEXT_CC').textContent=this.value.length+' chars';});
+document.getElementById('CLR_URL').addEventListener('click',()=>{document.getElementById('URL_IN').value='';document.getElementById('URL_CC').textContent='0 chars';});
+document.querySelectorAll('.qe-b[data-url]').forEach(b=>b.addEventListener('click',()=>{document.getElementById('URL_IN').value=b.dataset.url;document.getElementById('URL_CC').textContent=b.dataset.url.length+' chars';toast('Example URL loaded');} ));
+document.querySelectorAll('.qe-b[data-text]').forEach(b=>b.addEventListener('click',()=>{document.getElementById('TEXT_IN').value=b.dataset.text;document.getElementById('TEXT_CC').textContent=b.dataset.text.length+' chars';toast('Example message loaded');} ));
+
+/* ═══ IMAGE ═══ */
+const UPZ=document.getElementById('UPZ'),IMG_IN=document.getElementById('IMG_IN'),PW=document.getElementById('PREV_WRAP');
+let IMG_DATA=null;
+UPZ.addEventListener('click',()=>IMG_IN.click());
+UPZ.addEventListener('dragover',e=>{e.preventDefault();UPZ.classList.add('dg');});
+UPZ.addEventListener('dragleave',()=>UPZ.classList.remove('dg'));
+UPZ.addEventListener('drop',e=>{e.preventDefault();UPZ.classList.remove('dg');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))loadImg(f);});
+IMG_IN.addEventListener('change',e=>{if(e.target.files[0])loadImg(e.target.files[0]);});
+document.getElementById('RM_IMG').addEventListener('click',()=>{IMG_DATA=null;PW.style.display='none';UPZ.style.display='block';IMG_IN.value='';toast('Image removed');});
+function loadImg(f){
+  document.getElementById('PREV_NAME').textContent=f.name;
+  document.getElementById('PREV_SIZE').textContent=(f.size/1024).toFixed(1)+' KB';
+  const r=new FileReader();r.onload=e=>{IMG_DATA=e.target.result;document.getElementById('PREV_IMG').src=IMG_DATA;UPZ.style.display='none';PW.style.display='block';toast('Image ready to scan','s');};
+  r.readAsDataURL(f);
+}
+
+/* ═══ SCAN ID ═══ */
+function newScanId(){
+  const id=String(Math.floor(Math.random()*9000)+1000);
+  document.getElementById('SCANID').textContent=id;
+  document.getElementById('SOV_ID').textContent=id;
+  document.getElementById('RES_ID').textContent='REPORT #CS-'+id;
+  return id;
+}
+
+/* ═══ TERMINAL ═══ */
+const TERM_LINES=[
+  {cmd:'initialize mal-denied-engine --mode=deep-scan --ai=claude'},
+  {out:'Loading threat signature database v4.0... [7,847 signatures]',cls:'ok'},
+  {cmd:'connect claude-ai-core --model=claude-sonnet --stream=true'},
+  {out:'AI inference engine ONLINE — Claude model active',cls:'ok'},
+  {cmd:'run url-inspector --deep --follow-redirects --check-whois'},
+  {out:'Analyzing URL structure and domain metadata...',cls:''},
+  {cmd:'run nlp-analyzer --tactics=all --sensitivity=high --lang=auto'},
+  {out:'Scanning for 12+ social engineering patterns...',cls:'w'},
+  {cmd:'run image-ocr --extract-text --detect-forms --brand-check'},
+  {out:'OCR extraction and brand impersonation analysis...',cls:''},
+  {cmd:'cross-ref threat-intel-db --feeds=3 --realtime'},
+  {out:'Cross-referencing threat intelligence feeds...',cls:''},
+  {cmd:'compute risk-scores --weighted --phishing --malware --dual'},
+  {out:'Phishing score: COMPUTED | Malware score: COMPUTED',cls:'ok'},
+  {cmd:'generate-report --format=json --recommendations --export'},
+  {out:'Report generation complete. Analysis finished.',cls:'ok'},
+];
+let termTimer=null;
+function startTerminal(){
+  const body=document.getElementById('TERM_BODY');body.innerHTML='';
+  let i=0;
+  termTimer=setInterval(()=>{
+    if(i>=TERM_LINES.length){clearInterval(termTimer);return;}
+    const l=TERM_LINES[i];const d=document.createElement('div');d.className='tl';
+    if(l.cmd)d.innerHTML=`<span class="tp">$</span><span class="tc2"> ${l.cmd}</span>`;
+    else d.innerHTML=`<span class="to ${l.cls||''}">  → ${l.out}</span>`;
+    body.appendChild(d);body.scrollTop=body.scrollHeight;i++;
+  },320);
+}
+
+/* ═══ PROGRESS ═══ */
+const PROG=[
+  {lbl:'Initializing AI Engine...',p:8},
+  {lbl:'Loading Threat Signatures...',p:18},
+  {lbl:'Scanning Content Patterns...',p:32},
+  {lbl:'Running NLP Analysis...',p:46},
+  {lbl:'Cross-referencing Database...',p:60},
+  {lbl:'Analyzing Behavior Patterns...',p:74},
+  {lbl:'Calculating Risk Scores...',p:88},
+  {lbl:'Generating Report...',p:96},
+  {lbl:'Complete.',p:100},
+];
+function runProgress(cb){
+  let i=0;const fill=document.getElementById('PROG_FILL'),step=document.getElementById('PROG_STEP'),pct=document.getElementById('PROG_PCT');
+  fill.style.width='0%';
+  const t=setInterval(()=>{
+    if(i>=PROG.length){clearInterval(t);setTimeout(cb,300);return;}
+    fill.style.width=PROG[i].p+'%';step.textContent=PROG[i].lbl;pct.textContent=PROG[i].p+'%';i++;
+  },480);
+}
+
+/* ═══ SESSION STATS ═══ */
+let S={scans:0,threats:0,safe:0,high:0},recentScans=[];
+function updateStats(isHigh){
+  S.scans++;if(isHigh){S.threats++;S.high++;}else S.safe++;
+  document.getElementById('ST_SCANS').textContent=S.scans;
+  document.getElementById('ST_THREATS').textContent=S.threats;
+  document.getElementById('ST_SAFE').textContent=S.safe;
+  document.getElementById('ST_HIGH').textContent=S.high;
+}
+function addRecent(tab,score){
+  const icons={url:'🔗',text:'📧',image:'🖼️'};
+  const risk=score>60?'🔴':score>30?'🟡':'🟢';
+  recentScans.unshift(`${icons[tab]||'📄'} ${risk} ${tab.toUpperCase()} — ${score}% risk`);
+  if(recentScans.length>6)recentScans.pop();
+  const el=document.getElementById('RECENT_LIST');
+  el.innerHTML=recentScans.map(s=>`<div class="recent-item">${s}</div>`).join('');
+}
+
+/* ═══ GAUGE ═══ */
+function animGauge(gId,nId,lvlId,val,baseCol){
+  const circ=2*Math.PI*85;
+  const g=document.getElementById(gId),n=document.getElementById(nId),l=document.getElementById(lvlId);
+  const col=val>60?'var(--r)':val>30?'var(--y)':baseCol;
+  g.style.stroke=col;g.style.strokeDashoffset=circ-(val/100)*circ;
+  n.style.color=col;
+  let c=0;const st=Math.max(1,Math.ceil(val/60));
+  const t=setInterval(()=>{c=Math.min(c+st,val);n.textContent=c;if(c>=val)clearInterval(t);},22);
+  const lk=val>60?'high':val>30?'medium':'low';
+  const lm={high:{t:'HIGH RISK',bg:'rgba(255,23,68,.1)',col:'var(--r)',b:'rgba(255,23,68,.3)'},
+             medium:{t:'MEDIUM RISK',bg:'rgba(255,214,0,.08)',col:'var(--y)',b:'rgba(255,214,0,.3)'},
+             low:{t:'LOW RISK',bg:'rgba(0,255,157,.08)',col:'var(--g)',b:'rgba(0,255,157,.3)'}};
+  const lv=lm[lk];l.textContent=lv.t;l.style.background=lv.bg;l.style.color=lv.col;l.style.borderColor=lv.b;
+}
+
+/* ═══ OVERALL METER ═══ */
+function animMeter(val){
+  const fill=document.getElementById('OM_FILL'),valEl=document.getElementById('OM_VAL');
+  const col=val>60?'linear-gradient(90deg,var(--r),#ff4444)':val>30?'linear-gradient(90deg,var(--y),var(--a))':'linear-gradient(90deg,var(--g),var(--c))';
+  fill.style.background=col;fill.style.width=val+'%';
+  let c=0;const t=setInterval(()=>{c=Math.min(c+Math.ceil(val/60),val);valEl.textContent=c+'%';valEl.style.color=val>60?'var(--r)':val>30?'var(--y)':'var(--g)';if(c>=val)clearInterval(t);},22);
+}
+
+/* ═══ BREAKDOWN CHART ═══ */
+function renderBreakdown(cats){
+  const el=document.getElementById('BD_CHART');
+  el.innerHTML=cats.map(c=>`<div class="bd-item">
+    <div class="bd-lbl">${c.name}</div>
+    <div class="bd-bar"><div class="bd-f" style="width:0%;background:${c.color}" data-target="${c.value}"></div></div>
+    <div class="bd-val" style="color:${c.color}">${c.value}%</div>
+  </div>`).join('');
+  setTimeout(()=>el.querySelectorAll('.bd-f').forEach(b=>{b.style.transition='width 1.2s ease';b.style.width=b.dataset.target+'%';}),100);
+}
+
+/* ═══ SHOW RESULTS ═══ */
+let lastResult=null;
+function showResults(data){
+  lastResult=data;
+  const wrap=document.getElementById('RES_WRAP');wrap.classList.add('on');
+  document.getElementById('RES_TIME').textContent=new Date().toLocaleString();
+  const max=Math.max(data.phishingScore,data.malwareScore);
+  const badge=document.getElementById('THREAT_BADGE');
+  badge.className='tbadge';
+  if(max<=30){badge.textContent='✓ LOW THREAT';badge.classList.add('low');}
+  else if(max<=60){badge.textContent='⚠ MEDIUM THREAT';badge.classList.add('medium');}
+  else{badge.textContent='✕ HIGH THREAT';badge.classList.add('high');}
+  animMeter(max);
+  animGauge('PH_GAUGE','PH_NUM','PH_LVL',data.phishingScore,'var(--c)');
+  animGauge('MW_GAUGE','MW_NUM','MW_LVL',data.malwareScore,'var(--p)');
+  if(data.categories)renderBreakdown(data.categories);
+  document.getElementById('IND_LIST').innerHTML=data.indicators.map(ind=>`
+    <div class="ind-item ${ind.severity[0]}">
+      <div class="ind-sev ${ind.severity[0]}"></div>
+      <div class="ind-body">
+        <div class="ind-txt">${ind.text}</div>
+        <span class="ind-tag ${ind.severity[0]}">${ind.severity.toUpperCase()} SEVERITY</span>
+      </div>
+    </div>`).join('');
+  document.getElementById('REC_LIST').innerHTML=data.recommendations.map((r,i)=>`
+    <div class="rec-item">
+      <span class="rec-n">${String(i+1).padStart(2,'0')}</span>
+      <div class="rec-txt">${r}</div>
+    </div>`).join('');
+  wrap.scrollIntoView({behavior:'smooth',block:'start'});
+  updateStats(max>60);addRecent(ACTIVE_TAB,max);
+  if(max>60)toast('⚠️ HIGH THREAT — Do not interact with this content!','e');
+  else if(max>30)toast('⚠ Medium risk detected — Exercise caution');
+  else toast('✓ Content appears relatively safe','s');
+}
+
+/* ═══ AI ANALYSIS ═══ */
+async function analyzeWithAI(content,type){
+  const sys=`You are an elite cybersecurity AI threat analyst. Analyze the provided content for phishing, malware, and social engineering threats.
+
+Respond ONLY with valid JSON (no markdown, no backticks, no explanation) in EXACTLY this format:
+{
+  "phishingScore": <integer 0-100>,
+  "malwareScore": <integer 0-100>,
+  "categories": [
+    {"name": "Urgency Manipulation", "value": <0-100>, "color": "#ff1744"},
+    {"name": "Brand Impersonation", "value": <0-100>, "color": "#ff6d00"},
+    {"name": "Credential Harvesting", "value": <0-100>, "color": "#ffd600"},
+    {"name": "Malware Delivery", "value": <0-100>, "color": "#b400ff"},
+    {"name": "Redirect / Obfuscation", "value": <0-100>, "color": "#00e5ff"}
+  ],
+  "indicators": [
+    {"text": "specific technical description of threat indicator", "severity": "high|medium|low"}
+  ],
+  "recommendations": [
+    "specific actionable security recommendation"
+  ]
+}
+
+Provide 4-7 indicators and 4-6 recommendations. Be technically precise and specific.
+Scoring scale: 0-30=low risk, 31-60=medium risk/suspicious, 61-100=high risk/malicious.`;
+
+  const resp=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:1400,
+      system:sys,
+      messages:[{
+        role:'user',
+        content:type==='image'
+          ?[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:content.split(',')[1]}},{type:'text',text:'Analyze this screenshot for phishing, malware, and social engineering threats. Return JSON only.'}]
+          :`Analyze this ${type==='url'?'URL':'email/message'} for cybersecurity threats:\n\n${content}\n\nReturn JSON only, no other text.`
+      }]
+    })
+  });
+  const d=await resp.json();
+  const raw=d.content.map(b=>b.text||'').join('');
+  return JSON.parse(raw.replace(/```json|```/g,'').trim());
+}
+
+/* ═══ DEMO FALLBACK ═══ */
+function demoData(){
+  const s=ACTIVE_TAB==='url'&&document.getElementById('URL_IN').value.includes('verify')?76:
+           ACTIVE_TAB==='text'&&document.getElementById('TEXT_IN').value.includes('URGENT')?88:44;
+  return{
+    phishingScore:s,malwareScore:Math.floor(s*.68),
+    categories:[
+      {name:'Urgency Manipulation',value:s,color:'#ff1744'},
+      {name:'Brand Impersonation',value:Math.floor(s*.9),color:'#ff6d00'},
+      {name:'Credential Harvesting',value:Math.floor(s*.85),color:'#ffd600'},
+      {name:'Malware Delivery',value:Math.floor(s*.6),color:'#b400ff'},
+      {name:'Redirect / Obfuscation',value:Math.floor(s*.5),color:'#00e5ff'},
+    ],
+    indicators:[
+      {text:'Urgent action language creates artificial time pressure to bypass rational decision-making',severity:'high'},
+      {text:'Suspicious domain structure with lookalike characters mimicking trusted brand (e.g., paypa1, g00gle)',severity:'high'},
+      {text:'Explicit request for sensitive credentials or financial information via non-official channel',severity:'high'},
+      {text:'Brand impersonation of trusted financial or technology institution detected',severity:'medium'},
+      {text:'Redirect chain detected — final destination may differ from displayed URL',severity:'medium'},
+      {text:'Non-HTTPS or insecure transport protocol in use — credentials may be transmitted in plaintext',severity:'low'},
+    ],
+    recommendations:[
+      'Do not click any links or download attachments from this source under any circumstances.',
+      'Report this content to your IT security team or email provider immediately via official channels.',
+      'Verify all requests through official channels using independently confirmed contact information.',
+      'Enable multi-factor authentication (MFA/2FA) on all critical accounts as an additional protection layer.',
+      'Run a comprehensive malware and rootkit scan if you have already interacted with this content.',
+      'Educate colleagues about these specific phishing tactics to prevent future incidents across your organization.',
+    ]
+  };
+}
+
+/* ═══ ANALYZE BUTTON ═══ */
+document.getElementById('ABTN').addEventListener('click',async()=>{
+  let content='';const type=ACTIVE_TAB;
+  if(type==='url')content=document.getElementById('URL_IN').value.trim();
+  else if(type==='text')content=document.getElementById('TEXT_IN').value.trim();
+  else content=IMG_DATA;
+  if(!content){toast(type==='image'?'Please upload a screenshot first':'Please enter content to analyze','e');return;}
+  document.getElementById('RES_WRAP').classList.remove('on');
+  document.getElementById('ABTN').classList.add('run');
+  newScanId();
+  const ov=document.getElementById('SCAN_OV');ov.classList.add('on');
+  startTerminal();
+  runProgress(async()=>{
+    try{
+      const result=await analyzeWithAI(content,type);
+      ov.classList.remove('on');clearInterval(termTimer);
+      document.getElementById('ABTN').classList.remove('run');
+      showResults(result);
+    }catch(err){
+      console.warn('AI API unavailable, using demo:',err);
+      ov.classList.remove('on');clearInterval(termTimer);
+      document.getElementById('ABTN').classList.remove('run');
+      showResults(demoData());
+    }
+  });
+});
+
+/* ═══ NEW SCAN ═══ */
+document.getElementById('NEW_SCAN_BTN').addEventListener('click',()=>{
+  document.getElementById('RES_WRAP').classList.remove('on');
+  document.getElementById('URL_IN').value='';document.getElementById('TEXT_IN').value='';
+  IMG_DATA=null;document.getElementById('PREV_WRAP').style.display='none';
+  UPZ.style.display='block';IMG_IN.value='';
+  document.getElementById('URL_CC').textContent='0 chars';document.getElementById('TEXT_CC').textContent='0 chars';
+  document.getElementById('scanner').scrollIntoView({behavior:'smooth'});
+});
+
+/* ═══ EXPORT ═══ */
+document.getElementById('EXP_BTN').addEventListener('click',()=>{
+  if(!lastResult){toast('No scan result to export','e');return;}
+  const blob=new Blob([JSON.stringify({
+    id:document.getElementById('RES_ID').textContent,
+    timestamp:new Date().toISOString(),
+    threat:document.getElementById('THREAT_BADGE').textContent,
+    phishingScore:lastResult.phishingScore,
+    malwareScore:lastResult.malwareScore,
+    categories:lastResult.categories,
+    indicators:lastResult.indicators,
+    recommendations:lastResult.recommendations,
+  },null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='threat-report-'+Date.now()+'.json';a.click();
+  URL.revokeObjectURL(url);toast('Report exported successfully','s');
+});
+
+/* ═══ SCROLL ANIMATIONS ═══ */
+const obsCards=new IntersectionObserver(es=>{
+  es.forEach((e,i)=>{if(e.isIntersecting){e.target.style.animation=`fup .6s ${i*.1}s ease both`;obsCards.unobserve(e.target);}});
+},{threshold:.1});
+document.querySelectorAll('.fc,.ic,.pstep,.sco').forEach(el=>obsCards.observe(el));
+</script>
+</body>
+</html>

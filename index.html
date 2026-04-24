@@ -53,6 +53,7 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
+            background: rgba(3, 7, 18, 0.9);
         }
 
         nav a {
@@ -115,6 +116,7 @@
             color: var(--text-main);
             display: block;
             margin-bottom: 10px;
+            margin-top: 15px;
         }
 
         .input-wrapper {
@@ -140,6 +142,37 @@
             outline: none;
             border-color: var(--primary-glow);
             box-shadow: 0 0 15px var(--primary-dim);
+        }
+
+        /* Model Selector Styling */
+        select {
+            width: 100%;
+            padding: 14px;
+            background-color: rgba(0, 0, 0, 0.4);
+            border: 1px solid #374151;
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300ffcc%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px top 50%;
+            background-size: 12px auto;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--primary-glow);
+            box-shadow: 0 0 15px var(--primary-dim);
+        }
+
+        select option {
+            background-color: #111827;
+            color: var(--text-main);
+            padding: 10px;
         }
 
         /* Scanning Animation Overlay */
@@ -375,6 +408,15 @@
                 <textarea id="threatInput" placeholder="> Awaiting input sequence... Paste suspicious links or messages here."></textarea>
                 <div class="scan-overlay" id="scanOverlay"></div>
             </div>
+
+            <label for="modelSelect">Select AI Analysis Engine:</label>
+            <select id="modelSelect">
+                <option value="nvidia/nemotron-3-super-120b-a12b:free" selected>Nemotron 3 Super (Default Engine)</option>
+                <option value="inclusionai/ling-2.6-flash:free">Ling 2.6 Flash</option>
+                <option value="tencent/hy3-preview:free">Tencent HY3 Preview</option>
+                <option value="z-ai/glm-4.5-air:free">GLM 4.5 Air</option>
+                <option value="minimax/minimax-m2.5:free">MiniMax M2.5</option>
+            </select>
             
             <button id="scanBtn" onclick="scanContent()">Initialize Security Scan</button>
             <div class="loader-text" id="loader">Running deep neural analysis... Extracting threat vectors...</div>
@@ -429,7 +471,7 @@
             <div class="info-card full-width">
                 <h3>🛡️ How Mal.exe Denied Protects You</h3>
                 <p style="color: var(--text-muted); line-height: 1.6; max-width: 700px; margin: 0 auto;">
-                    Traditional antiviruses wait for you to download a file before scanning it. <strong>Mal.exe Denied is proactive.</strong> We use an advanced AI model (Nemotron 3 Super) to analyze the <em>context</em> and <em>intent</em> of URLs and text messages before you ever click them. Just paste suspicious content into our scanner, and the AI will act as your personal cybersecurity expert, giving you a clear risk score and explaining exactly why a link or message is dangerous.
+                    Traditional antiviruses wait for you to download a file before scanning it. <strong>Mal.exe Denied is proactive.</strong> We use advanced AI to analyze the <em>context</em> and <em>intent</em> of URLs and text messages before you ever click them. Just paste suspicious content into our scanner, select your preferred AI engine, and the system will act as your personal cybersecurity expert, giving you a clear risk score and explaining exactly why a link or message is dangerous.
                 </p>
             </div>
         </div>
@@ -441,16 +483,20 @@
     </footer>
 
     <script>
-        // ==========================================
+        // =========================================================================
         // 🔑 API CONFIGURATION
-        // ==========================================
-        const OPENROUTER_API_KEY = "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"; 
+        // =========================================================================
+        
+        // Paste your OpenRouter API Key here:
+        const OPENROUTER_API_KEY = "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"; 
         
         const API_URL = "https://openrouter.ai/api/v1/chat/completions";
-        const MODEL_NAME = "nvidia/nemotron-3-super-120b-a12b:free";
 
         async function scanContent() {
             const input = document.getElementById('threatInput').value.trim();
+            // Fetch the selected AI model directly from the dropdown menu
+            const selectedModel = document.getElementById('modelSelect').value;
+
             if (!input) {
                 alert("Please enter some content to analyze.");
                 return;
@@ -492,7 +538,7 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: MODEL_NAME,
+                        model: selectedModel, // Using the user's dropdown choice
                         messages: [
                             { role: "system", content: systemPrompt },
                             { role: "user", content: input }
@@ -501,20 +547,27 @@
                     })
                 });
 
-                if (!response.ok) throw new Error(`API Error: ${response.status}`);
+                if (!response.ok) throw new Error(`API Error: ${response.status} - Model might be at capacity limit.`);
 
                 const data = await response.json();
                 let aiResponse = data.choices[0].message.content;
 
-                // Clean JSON
+                // Clean JSON to prevent parsing errors
                 aiResponse = aiResponse.replace(/```json/g, '').replace(/```/g, '').trim();
-                const resultObj = JSON.parse(aiResponse);
+                
+                let resultObj;
+                try {
+                    resultObj = JSON.parse(aiResponse);
+                } catch (parseError) {
+                    console.error("Failed to parse AI output:", aiResponse);
+                    throw new Error("AI returned invalid data formatting. Please try scanning again.");
+                }
                 
                 displayResults(resultObj);
 
             } catch (error) {
                 console.error("Scan Error:", error);
-                alert("Threat analysis failed. Check console or API key.");
+                alert(error.message + "\n\nTip: Try selecting a different AI Analysis Engine from the dropdown menu.");
             } finally {
                 // Restore UI State
                 scanBtn.disabled = false;
@@ -531,17 +584,18 @@
             document.getElementById('results').style.display = 'block';
 
             // Animate Scores
-            animateValue("phishingScore", 0, phishingScore, 1500);
-            animateValue("malwareScore", 0, malwareScore, 1500);
+            animateValue("phishingScore", 0, phishingScore || 0, 1500);
+            animateValue("malwareScore", 0, malwareScore || 0, 1500);
 
             // Apply Styling after a slight delay to match animation end
             setTimeout(() => {
-                applyScoreStyling(phishingScore, document.getElementById('phishingBox'), document.getElementById('phishingScore'), document.getElementById('phishingLabel'));
-                applyScoreStyling(malwareScore, document.getElementById('malwareBox'), document.getElementById('malwareScore'), document.getElementById('malwareLabel'));
+                applyScoreStyling(phishingScore || 0, document.getElementById('phishingBox'), document.getElementById('phishingScore'), document.getElementById('phishingLabel'));
+                applyScoreStyling(malwareScore || 0, document.getElementById('malwareBox'), document.getElementById('malwareScore'), document.getElementById('malwareLabel'));
             }, 1500);
 
             // Set Explanation
-            document.getElementById('explanationText').innerHTML = explanation.replace(/\n/g, '<br>');
+            const fallbackExplanation = "Analysis complete, but explanation format was corrupted.";
+            document.getElementById('explanationText').innerHTML = (explanation || fallbackExplanation).replace(/\n/g, '<br>');
         }
 
         function applyScoreStyling(score, box, scoreEl, labelEl) {
@@ -567,11 +621,14 @@
 
         // Cool number counter animation
         function animateValue(id, start, end, duration) {
-            if (start === end) return;
+            if (start === end) {
+                document.getElementById(id).innerHTML = end;
+                return;
+            }
             let range = end - start;
             let current = start;
             let increment = end > start ? 1 : -1;
-            let stepTime = Math.abs(Math.floor(duration / range));
+            let stepTime = Math.abs(Math.floor(duration / range)) || 10;
             let obj = document.getElementById(id);
             
             // Reset colors during animation

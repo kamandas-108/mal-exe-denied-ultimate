@@ -5,507 +5,323 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mal.exe Denied | AI Threat Hunter</title>
     <style>
-        /* Cyber Theme Variables */
         :root {
-            --bg-color: #030712;
-            --panel-bg: rgba(17, 24, 39, 0.75);
-            --border-glow: #1e3a8a;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-cyan: #06b6d4;
-            --accent-blue: #3b82f6;
-            --safe-color: #10b981;
-            --warn-color: #f59e0b;
-            --danger-color: #ef4444;
-        }
-
-        html {
-            scroll-behavior: smooth;
+            --bg-color: #0d1117;
+            --panel-bg: #161b22;
+            --primary-glow: #00ffcc;
+            --text-main: #c9d1d9;
+            --danger: #ff4444;
+            --warning: #ffcc00;
+            --safe: #00cc66;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(6, 182, 212, 0.05), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.05), transparent 25%);
             color: var(--text-main);
             margin: 0;
-            padding: 0;
-            min-height: 100vh;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        /* Glassmorphism Containers */
-        .container, .about-section {
-            width: 90%;
-            max-width: 850px;
-            background: var(--panel-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 2.5rem;
-            margin-top: 3rem;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), 0 0 20px rgba(59, 130, 246, 0.1);
-            animation: fadeInUp 0.8s ease-out;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 2rem;
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--panel-bg);
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
         }
 
         h1 {
-            color: #fff;
-            margin-bottom: 0.5rem;
-            font-size: 2.5rem;
-            letter-spacing: 2px;
+            text-align: center;
+            color: var(--primary-glow);
             text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
-        }
-
-        .subtitle {
-            color: var(--accent-cyan);
-            font-size: 1.1rem;
-            font-weight: 500;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             margin-top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
-        /* Input Area */
-        .input-section {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            position: relative;
+        p.subtitle {
+            text-align: center;
+            font-size: 0.9em;
+            color: #8b949e;
+            margin-bottom: 30px;
+        }
+
+        label {
+            font-weight: bold;
+            color: var(--primary-glow);
+            display: block;
+            margin-bottom: 10px;
         }
 
         textarea {
             width: 100%;
-            height: 140px;
-            background-color: rgba(3, 7, 18, 0.6);
-            border: 1px solid #334155;
-            color: var(--text-main);
-            padding: 1.2rem;
-            border-radius: 12px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 1.05rem;
+            height: 150px;
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 5px;
+            color: #fff;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 14px;
             resize: vertical;
             box-sizing: border-box;
-            transition: all 0.3s ease;
+            transition: border-color 0.3s;
         }
 
         textarea:focus {
             outline: none;
-            border-color: var(--accent-cyan);
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.3) inset;
+            border-color: var(--primary-glow);
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
         }
 
         button {
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
-            color: #fff;
-            border: none;
-            padding: 1.2rem;
-            border-radius: 12px;
-            font-size: 1.2rem;
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background-color: transparent;
+            color: var(--primary-glow);
+            border: 2px solid var(--primary-glow);
+            border-radius: 5px;
+            font-size: 16px;
             font-weight: bold;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
         }
 
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.6);
+            background-color: var(--primary-glow);
+            color: var(--bg-color);
+            box-shadow: 0 0 15px var(--primary-glow);
         }
 
         button:disabled {
-            background: #334155;
-            color: #94a3b8;
+            border-color: #555;
+            color: #555;
             cursor: not-allowed;
-            transform: none;
             box-shadow: none;
         }
 
-        /* Scanning Animation */
-        .scanner-container {
-            display: none;
-            margin-top: 2rem;
-            text-align: center;
-        }
-
-        .scanner-line {
-            width: 100%;
-            height: 4px;
-            background: var(--accent-cyan);
-            box-shadow: 0 0 15px var(--accent-cyan);
-            border-radius: 50%;
-            animation: scan 1.5s infinite ease-in-out alternate;
-        }
-
-        .scanning-text {
-            color: var(--accent-cyan);
-            font-weight: bold;
-            margin-top: 1rem;
-            letter-spacing: 2px;
-            animation: pulseText 1.5s infinite;
-        }
-
         /* Results Section */
-        .results-section {
+        #results {
             display: none;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            animation: fadeIn 0.5s ease-in;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #30363d;
         }
 
-        .scores-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
+        .score-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
         }
 
-        .score-card {
-            background: rgba(3, 7, 18, 0.6);
-            padding: 2rem;
-            border-radius: 12px;
+        .score-box {
+            flex: 1;
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
             text-align: center;
-            border: 2px solid transparent;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
         }
 
-        .score-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 4px;
-        }
-
-        .score-card h3 {
-            margin: 0 0 1rem 0;
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
+        .score-box h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.1em;
+            color: #8b949e;
         }
 
         .score-value {
-            font-size: 4rem;
-            font-weight: 900;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            font-size: 3em;
+            font-weight: bold;
+            margin: 10px 0;
         }
 
-        .explanation-card {
-            background: rgba(3, 7, 18, 0.6);
-            padding: 2rem;
-            border-radius: 12px;
-            border-left: 4px solid var(--accent-blue);
-            line-height: 1.8;
-            font-size: 1.05rem;
+        .score-label {
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .explanation-card h3 {
-            margin-top: 0;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Colors for Security Status */
-        .safe { color: var(--safe-color); border-color: var(--safe-color); box-shadow: 0 0 20px rgba(16, 185, 129, 0.1); }
-        .safe::before { background: var(--safe-color); }
-        
-        .warn { color: var(--warn-color); border-color: var(--warn-color); box-shadow: 0 0 20px rgba(245, 158, 11, 0.1); }
-        .warn::before { background: var(--warn-color); }
-        
-        .danger { color: var(--danger-color); border-color: var(--danger-color); box-shadow: 0 0 20px rgba(239, 68, 68, 0.15); }
-        .danger::before { background: var(--danger-color); }
-
-        /* About Section */
-        .about-section {
-            margin-top: 2rem;
-            margin-bottom: 4rem;
-            background: rgba(17, 24, 39, 0.5);
-        }
-
-        .about-section h2 {
-            text-align: center;
-            color: var(--accent-cyan);
-            margin-bottom: 2rem;
-            font-size: 2rem;
-        }
-
-        .about-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-
-        .about-card {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 1.5rem;
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .about-card h4 {
-            color: #fff;
-            font-size: 1.2rem;
-            margin-top: 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 0.5rem;
-        }
-
-        .about-card p {
-            color: var(--text-muted);
+        .explanation-box {
+            background-color: #0d1117;
+            border-left: 4px solid var(--primary-glow);
+            padding: 20px;
+            border-radius: 4px;
             line-height: 1.6;
         }
 
-        .full-width {
-            grid-column: 1 / -1;
+        .loader {
+            display: none;
             text-align: center;
-            margin-top: 1rem;
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            width: 100%;
-            background: rgba(0,0,0,0.5);
-            border-top: 1px solid rgba(255,255,255,0.05);
-            margin-top: auto;
-        }
-
-        footer p { margin: 5px 0; }
-        .developers { color: var(--accent-cyan); font-weight: 500; }
-
-        /* Keyframes */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes scan {
-            0% { transform: translateY(-10px) scaleX(0.8); opacity: 0.5; }
-            100% { transform: translateY(10px) scaleX(1); opacity: 1; }
-        }
-        @keyframes pulseText {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .scores-grid, .about-grid { grid-template-columns: 1fr; }
-            h1 { font-size: 2rem; }
+            margin-top: 20px;
+            color: var(--primary-glow);
+            font-family: monospace;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <header>
-            <h1>🛡️ Mal.exe Denied</h1>
-            <p class="subtitle">AI-Powered Threat Hunter</p>
-        </header>
+        <h1>🛡️ Mal.exe Denied</h1>
+        <p class="subtitle">AI-Powered Phishing & Malware Threat Hunter</p>
 
-        <div class="input-section">
-            <textarea id="threatInput" placeholder="> Awaiting input... Paste suspicious URL, email content, or SMS here for AI analysis."></textarea>
-            <button id="scanBtn" onclick="analyzeThreat()">Initiate Security Scan</button>
-        </div>
+        <label for="threatInput">Analyze Suspicious Content (URL, Email, Message, Text):</label>
+        <textarea id="threatInput" placeholder="Paste the suspicious link, email body, or text message here..."></textarea>
+        
+        <button id="scanBtn" onclick="scanContent()">Initiate Threat Scan</button>
+        
+        <div class="loader" id="loader">Analyzing threat vectors... Please wait.</div>
 
-        <div class="scanner-container" id="loading">
-            <div class="scanner-line"></div>
-            <div class="scanning-text">INTERCEPTING DATA & RUNNING AI HEURISTICS...</div>
-        </div>
-
-        <div class="results-section" id="results">
-            <div class="scores-grid">
-                <div class="score-card" id="phishCard">
-                    <h3>🚨 Phishing Risk</h3>
-                    <div class="score-value" id="phishScore">0</div>
+        <div id="results">
+            <div class="score-container">
+                <div class="score-box" id="phishingBox">
+                    <h3>Phishing Risk</h3>
+                    <div class="score-value" id="phishingScore">--</div>
+                    <div class="score-label" id="phishingLabel">Waiting</div>
                 </div>
-                <div class="score-card" id="malCard">
-                    <h3>☣️ Malware Risk</h3>
-                    <div class="score-value" id="malScore">0</div>
+                <div class="score-box" id="malwareBox">
+                    <h3>Malware Risk</h3>
+                    <div class="score-value" id="malwareScore">--</div>
+                    <div class="score-label" id="malwareLabel">Waiting</div>
                 </div>
             </div>
             
-            <div class="explanation-card">
-                <h3>🧠 AI Analysis Report</h3>
-                <div id="aiExplanation">Explanation will appear here.</div>
+            <div class="explanation-box">
+                <h3 style="margin-top: 0; color: var(--primary-glow);">Security Analysis</h3>
+                <div id="explanationText">Results will appear here.</div>
             </div>
         </div>
     </div>
-
-    <div class="about-section">
-        <h2>Cybersecurity Awareness</h2>
-        <div class="about-grid">
-            <div class="about-card">
-                <h4>🎣 What is Phishing?</h4>
-                <p>Phishing is a cyberattack where criminals impersonate trusted organizations (like your bank, delivery services, or streaming apps) to trick you into revealing sensitive data. They use urgency and fear to make you click fake links or hand over passwords.</p>
-            </div>
-            <div class="about-card">
-                <h4>🦠 What is Malware?</h4>
-                <p>Malware (malicious software) includes viruses, trojans, and ransomware designed to infiltrate, damage, or steal data from your device. It often hides in suspicious downloads, infected email attachments, or deceptive applications.</p>
-            </div>
-            <div class="about-card full-width">
-                <h4>🛡️ How Mal.exe Denied Protects You</h4>
-                <p>Instead of relying on outdated blocklists, our platform uses cutting-edge <strong>Google Gemini AI</strong> to analyze the actual *context* and *intent* behind messages and links. It hunts for psychological manipulation, hidden payload indicators, and deceitful patterns in real-time, providing you with a simple threat score before you make a dangerous click.</p>
-            </div>
-        </div>
-    </div>
-
-    <footer>
-        <p>Developed by <span class="developers">Kaman Das, Shivam Kumar Pani, Abhishek Rath and Amrit Ranjan</span></p>
-        <p>Mal.exe Denied ⓒ2026</p>
-    </footer>
 
     <script>
         // ==========================================
-        // 🔑 REPLACE THIS WITH YOUR ACTUAL GEMINI API KEY
-        const GEMINI_API_KEY = "AIzaSyBoO7_sppjex9jZbj8Mt-9SFSeAxsbyQ6I"; 
+        // 🔑 API CONFIGURATION
         // ==========================================
+        const OPENROUTER_API_KEY = "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"; 
+        
+        const API_URL = "https://openrouter.ai/api/v1/chat/completions";
+        const MODEL_NAME = "nvidia/nemotron-3-super-120b-a12b:free";
 
-        async function analyzeThreat() {
+        async function scanContent() {
             const input = document.getElementById('threatInput').value.trim();
             if (!input) {
-                alert("Please enter a URL or message to scan.");
+                alert("Please enter some content to analyze.");
                 return;
             }
 
-            // UI State updates
-            const scanBtn = document.getElementById('scanBtn');
-            const loading = document.getElementById('loading');
-            const results = document.getElementById('results');
+            if (OPENROUTER_API_KEY === "") {
+                alert("Please add your OpenRouter API key to the JavaScript code.");
+                return;
+            }
 
-            scanBtn.disabled = true;
-            scanBtn.innerText = "Scanning...";
-            loading.style.display = 'block';
-            results.style.display = 'none';
+            // UI Updates: Show loader, hide old results
+            document.getElementById('scanBtn').disabled = true;
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
 
-            // Reset scores for animation
-            document.getElementById('phishScore').innerText = "0";
-            document.getElementById('malScore').innerText = "0";
-
-            const prompt = `
-            You are "Mal.exe Denied", an expert cybersecurity threat hunter. 
-            Analyze the following text/URL for phishing and malware risks. 
+            // The Prompt System
+            const systemPrompt = `You are an elite cybersecurity threat analyst for a system called 'Mal.exe Denied'. 
+            Your job is to analyze the provided text, email, or URL for phishing and malware threats.
             
-            Input to analyze:
-            "${input}"
-            
-            Respond STRICTLY with a valid JSON object matching this exact structure, with no markdown formatting or extra text outside the JSON:
+            You must reply ONLY with a valid JSON object matching this exact structure, with no markdown formatting, no code blocks, and no extra text:
             {
                 "phishingScore": <number between 0 and 100>,
                 "malwareScore": <number between 0 and 100>,
-                "explanation": "<A clear, concise explanation of the risks found, aimed at an everyday internet user. Explain why it is safe or dangerous.>"
+                "explanation": "<A clear, concise, 2-3 paragraph explanation of the risks, tailored for everyday users. Explain *why* it got these scores.>"
             }`;
 
             try {
-                // Call Gemini API (gemini-2.5-flash)
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                const response = await fetch(API_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+                        'HTTP-Referer': window.location.href, // Required by OpenRouter
+                        'X-Title': 'Mal.exe Denied', // Required by OpenRouter
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }]
+                        model: MODEL_NAME,
+                        messages: [
+                            { role: "system", content: systemPrompt },
+                            { role: "user", content: `Analyze this content:\n\n${input}` }
+                        ],
+                        temperature: 0.1 // Low temperature for consistent, analytical responses
                     })
                 });
 
                 if (!response.ok) {
-                    throw new Error(`API Error: ${response.status} - ${response.statusText}`);
+                    throw new Error(`API Error: ${response.status}`);
                 }
 
                 const data = await response.json();
-                
-                let aiResponseText = data.candidates[0].content.parts[0].text;
-                aiResponseText = aiResponseText.replace(/```json/g, '').replace(/```/g, '').trim();
-                const resultObj = JSON.parse(aiResponseText);
+                let aiResponse = data.choices[0].message.content;
 
-                updateUI(resultObj.phishingScore, resultObj.malwareScore, resultObj.explanation);
+                // Clean up the response just in case the AI wraps it in markdown (```json ... ```)
+                aiResponse = aiResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+                
+                const resultObj = JSON.parse(aiResponse);
+                displayResults(resultObj);
 
             } catch (error) {
-                console.error("Error during analysis:", error);
-                alert("An error occurred while connecting to the AI. Please open the browser console for more details.");
+                console.error("Scanning failed:", error);
+                alert("An error occurred during the scan. Check the console for details.");
             } finally {
-                scanBtn.disabled = false;
-                scanBtn.innerText = "Initiate Security Scan";
-                loading.style.display = 'none';
+                // UI Updates: Hide loader, enable button
+                document.getElementById('scanBtn').disabled = false;
+                document.getElementById('loader').style.display = 'none';
             }
         }
 
-        function updateUI(phishingScore, malwareScore, explanation) {
-            const resultsDiv = document.getElementById('results');
-            const phishScoreEl = document.getElementById('phishScore');
-            const malScoreEl = document.getElementById('malScore');
-            const phishCard = document.getElementById('phishCard');
-            const malCard = document.getElementById('malCard');
-            const explanationEl = document.getElementById('aiExplanation');
+        function displayResults(data) {
+            const { phishingScore, malwareScore, explanation } = data;
 
-            // Set Explanation
-            explanationEl.innerText = explanation;
+            // Update Phishing Score UI
+            const pScoreEl = document.getElementById('phishingScore');
+            const pLabelEl = document.getElementById('phishingLabel');
+            pScoreEl.innerText = phishingScore;
+            applyScoreStyling(phishingScore, document.getElementById('phishingBox'), pScoreEl, pLabelEl);
 
-            // Apply coloring based on risk rules
-            applyScoreColor(phishingScore, phishScoreEl, phishCard);
-            applyScoreColor(malwareScore, malScoreEl, malCard);
+            // Update Malware Score UI
+            const mScoreEl = document.getElementById('malwareScore');
+            const mLabelEl = document.getElementById('malwareLabel');
+            mScoreEl.innerText = malwareScore;
+            applyScoreStyling(malwareScore, document.getElementById('malwareBox'), mScoreEl, mLabelEl);
 
-            // Show results and scroll to them smoothly
-            resultsDiv.style.display = 'block';
-            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            // Update Explanation
+            document.getElementById('explanationText').innerHTML = explanation.replace(/\n/g, '<br>');
 
-            // Animate Numbers
-            animateValue(phishScoreEl, 0, phishingScore, 1500);
-            animateValue(malScoreEl, 0, malwareScore, 1500);
+            // Reveal Results
+            document.getElementById('results').style.display = 'block';
         }
 
-        // Cool Number Count-Up Animation
-        function animateValue(obj, start, end, duration) {
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                // Easing out function for smoother stop
-                const easeOutQuad = progress * (2 - progress);
-                obj.innerHTML = Math.floor(easeOutQuad * (end - start) + start);
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                } else {
-                    obj.innerHTML = end; // Ensure exact final number
-                }
-            };
-            window.requestAnimationFrame(step);
-        }
-
-        function applyScoreColor(score, textElement, cardElement) {
-            // Reset classes
-            textElement.className = 'score-value';
-            cardElement.className = 'score-card';
-
-            // 0–30 → Safe | 31–70 → Suspicious | 71–100 → High risk
+        function applyScoreStyling(score, box, scoreEl, labelEl) {
+            let color, text;
+            
             if (score <= 30) {
-                textElement.classList.add('safe');
-                cardElement.classList.add('safe');
+                color = 'var(--safe)';
+                text = 'Safe';
             } else if (score <= 70) {
-                textElement.classList.add('warn');
-                cardElement.classList.add('warn');
+                color = 'var(--warning)';
+                text = 'Suspicious';
             } else {
-                textElement.classList.add('danger');
-                cardElement.classList.add('danger');
+                color = 'var(--danger)';
+                text = 'High Risk';
             }
+
+            scoreEl.style.color = color;
+            box.style.borderColor = color;
+            labelEl.innerText = text;
+            labelEl.style.color = color;
         }
     </script>
 </body>
